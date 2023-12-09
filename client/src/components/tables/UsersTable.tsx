@@ -17,7 +17,7 @@ import { DownloadFile } from '../../utils/DownloadFile'
 import PopUp from '../popup/PopUp'
 import ResetMultiLoginDialog from '../dialogs/users/ResetMultiLogin'
 import BlockMultiLoginDialog from '../dialogs/users/BlockMultiLoginDialog'
-import { STable, STableBody, STableCell, STableHead, STableHeadCell, STableRow } from '../styled/STyledTable'
+import { STable, STableBody, STableCell, STableHead, STableHeadCell, STableRow } from '../styled/Table'
 
 type Props = {
     user: IUser | undefined,

@@ -8,7 +8,7 @@ import { queryClient } from '../../../main';
 import { BackendError } from '../../..';
 import AlertBar from '../../snacks/AlertBar';
 import { IUser } from '../../../types/user.types';
-import { STable, STableBody, STableCell, STableHead, STableRow } from '../../styled/STyledTable';
+import { STable, STableBody, STableCell, STableHead, STableRow } from '../../styled/Table';
 
 
 function AccessControlForm({ user }: { user: IUser }) {

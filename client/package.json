@@ -10,9 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.11.0",
     "@mui/material": "^5.11.8",
     "axios": "^1.2.3",
@@ -20,6 +19,8 @@
     "formik": "^2.2.9",
     "fuzzy-search": "^3.2.1",
     "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-qr-code": "^2.0.11",
     "react-query": "^3.39.2",
     "react-router-dom": "^6.7.0",
@@ -31,11 +32,11 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.5",
+    "@types/fuzzy-search": "^2.1.2",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@types/file-saver": "^2.0.5",
-    "@types/fuzzy-search": "^2.1.2",
     "@typescript-eslint/parser": "^6.10.0",
     "@vitejs/plugin-react": "^4.2.0",
     "eslint": "^8.53.0",

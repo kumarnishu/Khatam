@@ -36,7 +36,7 @@ router.route("/password/reset/:id").patch(isAuthenticatedUser, resetUserPassword
 router.post("/email/verify", isAuthenticatedUser, SendVerifyEmail)
 router.patch("/email/verify/:token", VerifyEmail)
 router.post("/password/reset", SendPasswordResetMail)
-router.patch("/password/reset/:token", ResetPassword)
+router.patch("/password/reset/email/:token", ResetPassword)
 
 
 export default router;

@@ -20,12 +20,16 @@ import { UserContext } from '../../contexts/userContext'
 type SelectedData = {
     username?: string,
     email?: string,
+    company?: string,
+    mobile?: string,
     dp?: string,
     email_verified?: Boolean,
     is_active?: Boolean,
-    last_login?: string,
-    roles?: string,
-    created_at?: string,
+    is_admin?: Boolean,
+    is_owner?: Boolean,
+    is_manager?: Boolean,
+    last_login?: Date,
+    created_at?: Date,
     createdBy?: string
 }
 
@@ -82,12 +86,17 @@ export default function UsersPage() {
             return data.push({
                 username: user.username,
                 email: user.email,
+                company: user.company.name,
+                mobile: user.mobile,
                 dp: user.dp?.public_url,
                 email_verified: user.email_verified,
                 is_active: user.is_active,
-                last_login: lastlogin,
-                roles: user?.is_admin ? "admin" : "user",
-                created_at: created_at
+                is_admin: user.is_admin,
+                is_owner: user.is_owner,
+                is_manager: user.is_manager,
+                last_login: user.last_login,
+                created_at: user.created_at,
+                createdBy: user.created_by.username,
             })
         })
         setSelectedData(data)

@@ -11,7 +11,6 @@ function useRemoteLoading() {
     return { remoteUser: data?.data, remoteLoading: isLoading, isError: isError }
 }
 
-// usercontext
 type Context = {
     loading: boolean;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
@@ -22,7 +21,6 @@ export const LoadingContext = createContext<Context>({
 });
 
 
-// user provider
 export function LoadingProvider(props: { children: JSX.Element }) {
     const { remoteUser, remoteLoading, isError } = useRemoteLoading()
     const [loading, setLoading] = useState(remoteLoading);

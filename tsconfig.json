@@ -11,6 +11,8 @@
   "exclude": [
     "client",
     ".browsers",
-    ".wwebjs_cache"
+    ".wwebjs_cache",
+    "dist",
+    "build"
   ]
 }

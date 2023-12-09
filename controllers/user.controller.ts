@@ -16,7 +16,7 @@ export const GetPaginatedUsers = async (req: Request, res: Response, next: NextF
     let limit = Number(req.query.limit)
     let page = Number(req.query.page)
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
-        let users = await User.find({ company: req.user?.company }).populate("created_by").populate("updated_by")
+        let users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by")
         users = users.slice((page - 1) * limit, limit * page)
         let count = await User.countDocuments()
         return res.status(200).json({
@@ -31,7 +31,7 @@ export const GetPaginatedUsers = async (req: Request, res: Response, next: NextF
 }
 
 export const GetUsers = async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.find({ company: req.user?.company }).populate("created_by").populate("updated_by")
+    const users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by")
     res.status(200).json(users)
 }
 
@@ -163,13 +163,14 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
 
 export const GetProfile = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.user?._id
-    const user = await User.findById(id).populate("created_by").populate("updated_by")
+    const user = await User.findById(id).populate('company').populate("created_by").populate("updated_by")
     res.status(200).json(user)
 }
 
 //post/put/patch/delete
 export const SignUp = async (req: Request, res: Response, next: NextFunction) => {
-    let { username, email, password, mobile, company } = req.body as {
+    let body = JSON.parse(req.body.body)
+    let { username, email, password, mobile, company } = body as {
         username: string, email: string, password: string, mobile: string, company: string
     }
     // validations
@@ -179,7 +180,7 @@ export const SignUp = async (req: Request, res: Response, next: NextFunction) =>
         return res.status(400).json({ message: "please provide valid email" });
     if (await User.findOne({ username: username.toLowerCase().trim() }))
         return res.status(403).json({ message: `${username} not available` });
-    if (await User.findOne({ company: company.toLowerCase().trim() }))
+    if (await Company.findOne({ name: company.toLowerCase().trim() }))
         return res.status(403).json({ message: `${company} already exists` });
     if (await User.findOne({ email: email.toLowerCase().trim() }))
         return res.status(403).json({ message: `${email} already exists` });
@@ -230,11 +231,11 @@ export const SignUp = async (req: Request, res: Response, next: NextFunction) =>
     new_company.created_by = owner
     new_company.created_at = new Date()
     new_company.updated_at = new Date()
-    sendUserToken(res, owner.getAccessToken())
     await owner.save()
     await new_company.save()
-    owner = await User.findById(owner._id).populate("created_by").populate("updated_by") || owner
-    res.status(201).json(owner)
+    sendUserToken(res, await owner.getAccessToken())
+    let result = await User.findById(owner._id).populate("company").populate('company').populate("created_by").populate("updated_by")
+    res.status(201).json(result)
 }
 
 export const NewUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -302,13 +303,13 @@ export const Login = async (req: Request, res: Response, next: NextFunction) => 
 
     let user = await User.findOne({
         username: String(username).toLowerCase().trim(),
-    }).select("+password").populate("created_by").populate("updated_by")
+    }).select("+password").populate('company').populate("created_by").populate("updated_by")
 
 
     if (!user) {
         user = await User.findOne({
             email: String(username).toLowerCase().trim(),
-        }).select("+password").populate("created_by").populate("updated_by")
+        }).select("+password").populate('company').populate("created_by").populate("updated_by")
         if (user)
             if (!user.email_verified)
                 return res.status(403).json({ message: "please verify email id before login" })
@@ -317,7 +318,7 @@ export const Login = async (req: Request, res: Response, next: NextFunction) => 
         return res.status(403).json({ message: "Invalid username or password" })
     if (!user.is_active)
         return res.status(401).json({ message: "you are blocked, contact admin" })
-    const isPasswordMatched = user.comparePassword(password);
+    const isPasswordMatched = await user.comparePassword(password);
     if (!isPasswordMatched)
         return res.status(403).json({ message: "Invalid username or password" })
     if (user.created_by._id !== user._id) {
@@ -702,11 +703,11 @@ export const SendPasswordResetMail = async (req: Request, res: Response, next: N
         return res.status(404).json({ message: "you have no account with this email id" })
     const resetToken = await user.getResetPasswordToken();
     await user.save();
-    const resetPasswordUrl = `${process.env.HOST}/password/reset/${resetToken}`;
+    const resetPasswordUrl = `${process.env.HOST}/password/reset/email/${resetToken}`;
     const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\n valid for 15 minutes only \n\n\n\nIf you have not requested this email then, please ignore it.`;
     const options = {
         to: user.email,
-        subject: `Crm Password Recovery`,
+        subject: `Agarson Crm Password Recovery`,
         message: message,
     };
     let response = await sendEmail(options);
@@ -760,7 +761,7 @@ export const SendVerifyEmail = async (req: Request, res: Response, next: NextFun
     const message = `Your email verification link is :- \n\n ${emailVerficationUrl} \n\n valid for 15 minutes only \n\nIf you have not requested this email then, please ignore it.`;
     const options = {
         to: user.email,
-        subject: `CRM Email Verification`,
+        subject: `Agarson CRM Email Verification`,
         message,
     };
 

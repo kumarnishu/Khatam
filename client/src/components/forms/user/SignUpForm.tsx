@@ -1,5 +1,5 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import {  Button, CircularProgress, IconButton, InputAdornment, Stack, TextField } from '@mui/material';
+import { Button, CircularProgress, IconButton, InputAdornment, Stack, TextField } from '@mui/material';
 import { AxiosResponse } from 'axios';
 import { useFormik } from 'formik';
 import { useEffect, useContext, useState } from 'react';
@@ -16,6 +16,7 @@ import AlertBar from '../../snacks/AlertBar';
 
 type TFormData = {
   username: string,
+  company: string,
   email: string
   password: string
   mobile: string
@@ -33,6 +34,7 @@ function OwnerSignUpForm() {
   const formik = useFormik<TFormData>({
     initialValues: {
       username: "",
+      company: "",
       email: "",
       password: "",
       mobile: "",
@@ -45,6 +47,11 @@ function OwnerSignUpForm() {
         .max(10, 'Must be 10 digits ')
         .required('Required field'),
       username: Yup
+        .string()
+        .required('Required field')
+        .min(4, 'Must be 4 characters or more')
+        .max(30, 'Must be 30 characters or less'),
+      company: Yup
         .string()
         .required('Required field')
         .min(4, 'Must be 4 characters or more')
@@ -84,10 +91,14 @@ function OwnerSignUpForm() {
     }),
     onSubmit: (values: TFormData) => {
       let formdata = new FormData()
-      formdata.append("username", values.username)
-      formdata.append("mobile", values.mobile)
-      formdata.append("email", values.email)
-      formdata.append("password", values.password)
+      const data = {
+        username: values.username,
+        company: values.company,
+        mobile: values.mobile,
+        email: values.email,
+        password: values.password,
+      }
+      formdata.append("body", JSON.stringify(data))
       formdata.append("dp", values.dp)
       mutate(formdata)
     }
@@ -141,6 +152,19 @@ function OwnerSignUpForm() {
         <TextField
 
 
+          fullWidth
+          required
+          error={
+            formik.touched.company && formik.errors.company ? true : false
+          }
+          id="company"
+          label="Company"
+          helperText={
+            formik.touched.company && formik.errors.company ? formik.errors.company : ""
+          }
+          {...formik.getFieldProps('company')}
+        />
+        <TextField
           required
           fullWidth
           error={
@@ -154,8 +178,6 @@ function OwnerSignUpForm() {
           {...formik.getFieldProps('email')}
         />
         <TextField
-
-
           required
           error={
             formik.touched.password && formik.errors.password ? true : false
@@ -182,7 +204,6 @@ function OwnerSignUpForm() {
           {...formik.getFieldProps('password')}
         />
         <TextField
-
           type="number"
           required
           fullWidth

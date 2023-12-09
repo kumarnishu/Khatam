@@ -1,7 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import compression from "compression"
 import dotenv from 'dotenv';
-
 import cookieParser from 'cookie-parser';
 import cors from "cors";
 import { MulterError } from 'multer';
@@ -9,6 +8,8 @@ import path from 'path';
 import morgan from "morgan";
 import { Storage } from '@google-cloud/storage';
 import { connectDatabase } from './config/db';
+import UserRoutes from "./routes/user.routes";
+import CompanyRoutes from "./routes/company.routes";
 
 const app = express()
 
@@ -62,6 +63,10 @@ const storage = new Storage({
 
 export const bucketName = String(process.env.bucketName)
 export const bucket = storage.bucket(bucketName)
+
+//routes
+app.use("/api/v1", UserRoutes)
+app.use("/api/v1", CompanyRoutes)
 
 
 //react app handler

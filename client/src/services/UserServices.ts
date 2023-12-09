@@ -118,7 +118,7 @@ export const ResetPassword = async ({ token, body }:
     token: string,
     body: { newPassword: string, confirmPassword: string }
   }) => {
-  return await apiClient.patch(`password/reset/${token}`, body)
+  return await apiClient.patch(`password/reset/email/${token}`, body)
 };
 
 // send reset password

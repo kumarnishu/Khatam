@@ -2,21 +2,16 @@ import {  Button, CircularProgress, TextField } from '@mui/material';
 import { Stack } from '@mui/system';
 import { AxiosResponse } from 'axios';
 import { useFormik } from 'formik';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { useMutation } from 'react-query';
-import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-import { UserChoiceActions, ChoiceContext } from '../../../contexts/dialogContext';
-import { paths } from '../../../Routes';
 import { ResetPasswordSendMail } from '../../../services/UserServices';
 import { UserContext } from '../../../contexts/userContext';
 import { BackendError } from '../../..';
 import AlertBar from '../../snacks/AlertBar';
 
 
-
 function ResetPasswordSendMailForm() {
-  const goto = useNavigate()
   const { user } = useContext(UserContext)
 
   const { mutate, isSuccess, isLoading, isError, error } = useMutation
@@ -26,7 +21,6 @@ function ResetPasswordSendMailForm() {
     >
     (ResetPasswordSendMail)
 
-  const { setChoice } = useContext(ChoiceContext)
   const formik = useFormik({
     initialValues: {
       email: user?.email || ""
@@ -42,14 +36,7 @@ function ResetPasswordSendMailForm() {
       mutate(values)
     },
   });
-  useEffect(() => {
-    if (isSuccess) {
-      setTimeout(() => {
-        setChoice({ type: UserChoiceActions.close_user })
-        goto(paths.dashboard)
-      }, 1000)
-    }
-  }, [setChoice, goto, isSuccess])
+ 
   return (
     <form onSubmit={formik.handleSubmit}>
 

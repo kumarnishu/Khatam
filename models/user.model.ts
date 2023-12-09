@@ -24,10 +24,9 @@ const UserSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {}, IUserMet
         lowercase: true,
     },
     company: {
-        type: mongoose.Types.ObjectId,
-        ref: 'company',
-        required: true,
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company',
+        required: true
     },
     mobile: {
         type: String,

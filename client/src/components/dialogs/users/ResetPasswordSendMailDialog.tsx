@@ -8,7 +8,7 @@ function ResetPasswordSendMailDialog() {
     const { choice, setChoice } = useContext(ChoiceContext)
 
     return (
-        <Dialog open={choice === UserChoiceActions.reset_password_mail ? true : false}
+        <Dialog fullScreen open={choice === UserChoiceActions.reset_password_mail ? true : false}
             onClose={() => setChoice({ type: UserChoiceActions.close_user })}
         >
             <IconButton style={{ display: 'inline-block', position: 'absolute', right: '0px' }} color="error" onClick={() => setChoice({ type: UserChoiceActions.close_user })}>
