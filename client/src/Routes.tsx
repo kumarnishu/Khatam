@@ -7,6 +7,7 @@ import EmailVerifyPage from './pages/users/EmailVerifyPage'
 import DashBoardNavBar from './components/navbar/DashboardNavbar'
 import DashBoardPage from './pages/DashBoardPage'
 import { LinearProgress } from '@mui/material'
+import CrmNavBar from './components/navbar/CrmNavBar'
 
 
 const ResetPasswordDialog = React.lazy(() => import('./components/dialogs/users/ResetPasswordDialog'))
@@ -20,22 +21,40 @@ const ReportPage = React.lazy(() => import('./pages/reports/ReportPage'))
 const ReportHelpPage = React.lazy(() => import('./pages/reports/ReportHelpPage'))
 const UsersPage = React.lazy(() => import('./pages/users/UsersPage'))
 const UsersHelpPage = React.lazy(() => import('./pages/users/UsersHelpPage'))
+const RefersPage = React.lazy(() => import('./pages/crm/RefersPage'))
+const CrmActivitiesPage = React.lazy(() => import('./pages/crm/CrmActivitiesPage'))
+const CustomersPage = React.lazy(() => import('./pages/crm/CustomersPage'))
+const UselessLeadsPage = React.lazy(() => import('./pages/crm/UselessLeadsPage'))
+const CrmReminderPage = React.lazy(() => import('./pages/crm/CrmReminderPage'))
+const UpdateLeadFieldsPage = React.lazy(() => import('./pages/crm/UpdateLeadFieldsPage'))
 
 
 
 export enum paths {
+  // crm
+  crm = "/crm",
+  crm_reminders = "crm_reminders",
+  crm_activities = "crm_activities",
+  customers = "customers",
+  updateble_fields_lead = "updateble_fields_lead",
+  refers = "refers",
+  useless_leads = "useless_leads",
   leads = "leads",
   crm_help_page = "crm_help_page",
 
+  // company
   company = "company",
   company_help_page = "company_help_page",
 
+  // reports
   report = "reports",
   report_help_page = "report_help_page",
 
+  // backup
   backup = "backups",
   backup_help_page = "backup_help_page",
 
+  // users
   users = "users",
   login = "/",
   dashboard = "/",
@@ -89,7 +108,7 @@ function AppRoutes() {
             </Route>}
           {/* crm nav bar */}
           {!user.crm_access_fields.is_hidden &&
-            < Route path={paths.leads} element={<UsersNavBar />}>
+            < Route path={paths.crm} element={<CrmNavBar />}>
               <Route index
                 element={
                   <Suspense fallback={<LinearProgress />}>
@@ -101,6 +120,49 @@ function AppRoutes() {
                 path={paths.leads} element={
                   <Suspense fallback={<LinearProgress />}>
                     <LeadsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={paths.updateble_fields_lead} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    < UpdateLeadFieldsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={paths.crm_reminders} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    <CrmReminderPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={paths.useless_leads} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    <UselessLeadsPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={paths.customers} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    <CustomersPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path={paths.crm_activities} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    <CrmActivitiesPage />
+                  </Suspense>
+                }
+              />
+
+              <Route
+                path={paths.refers} element={
+                  <Suspense fallback={<LinearProgress />}>
+                    <RefersPage />
                   </Suspense>
                 }
               />
@@ -155,6 +217,7 @@ function AppRoutes() {
                   </Suspense>
                 }
               />
+              
               <Route
                 path={paths.report_help_page} element={
                   <Suspense fallback={<LinearProgress />}>

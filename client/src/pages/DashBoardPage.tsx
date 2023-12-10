@@ -28,7 +28,7 @@ function DashBoardPage() {
                     </Grid>}
 
                     {/* companies */}
-                    {!user?.company_access_fields.is_hidden && <Grid item xs={12} md={3} lg={3} sx={{ p: 1 }}>
+                    {!user?.company_access_fields.is_hidden && user?.is_crm_admin && <Grid item xs={12} md={3} lg={3} sx={{ p: 1 }}>
                         <Link to={paths.company} style={{ textDecoration: 'none' }}>
                             <Card sx={{ bgcolor: 'white', boxShadow: 2, border: 10, borderRadius: 1, borderColor: 'white' }}>
                                 <CardContent sx={{ display: 'flex', direction: "row", alignItems: "center", gap: 2 }}>
@@ -44,7 +44,7 @@ function DashBoardPage() {
 
                     {/* crm */}
                     {!user?.crm_access_fields.is_hidden && <Grid item xs={12} md={3} lg={3} sx={{ p: 1 }}>
-                        <Link to={paths.leads} style={{ textDecoration: 'none' }}>
+                        <Link to={paths.crm} style={{ textDecoration: 'none' }}>
                             <Card sx={{ bgcolor: 'white', boxShadow: 2, border: 10, borderRadius: 1, borderColor: 'white' }}>
                                 <CardContent sx={{ display: 'flex', direction: "row", alignItems: "center", gap: 2 }}>
                                     <Group sx={{ height: 50, width: 50 }} />

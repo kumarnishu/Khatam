@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express"
-import { Company } from "../models/company.model";
+import { Company } from "../models/company/company.model";
 import { ICompany } from "../types/company.types";
 
 

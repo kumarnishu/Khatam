@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { ICompany } from "../types/company.types";
+import { ICompany } from "../../types/company.types";
 
 const CompanySchema = new mongoose.Schema<ICompany, mongoose.Model<ICompany, {}, {}>, {}>({
     name: {

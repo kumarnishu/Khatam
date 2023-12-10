@@ -4,12 +4,12 @@ import isMongoId from "validator/lib/isMongoId";
 import { deleteToken, sendUserToken } from '../middlewares/auth.middleware';
 import { IUser } from '../types/user.types';
 import { Asset } from '../types/asset.types';
-import { User } from '../models/user.model';
+import { User } from '../models/users/user.model';
 import { uploadFileToCloud } from '../utils/uploadFile';
 import { Access } from '../types/access.types';
 import { destroyFile } from '../utils/destroFile';
 import { sendEmail } from '../utils/sendEmail';
-import { Company } from '../models/company.model';
+import { Company } from '../models/company/company.model';
 
 //get
 export const GetPaginatedUsers = async (req: Request, res: Response, next: NextFunction) => {

@@ -9,6 +9,7 @@ import morgan from "morgan";
 import { Storage } from '@google-cloud/storage';
 import { connectDatabase } from './config/db';
 import UserRoutes from "./routes/user.routes";
+import CrmRoutes from "./routes/crm.routes";
 import CompanyRoutes from "./routes/company.routes";
 
 const app = express()
@@ -67,6 +68,7 @@ export const bucket = storage.bucket(bucketName)
 //routes
 app.use("/api/v1", UserRoutes)
 app.use("/api/v1", CompanyRoutes)
+app.use("/api/v1", CrmRoutes)
 
 
 //react app handler

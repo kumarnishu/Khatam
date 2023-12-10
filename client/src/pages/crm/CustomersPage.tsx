@@ -4,20 +4,20 @@ import { Stack } from '@mui/system'
 import { AxiosResponse } from 'axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
+import { FuzzySearchCustomers, GetCustomers } from '../../services/CrmServices'
 import { UserContext } from '../../contexts/userContext'
 import DBPagination from '../../components/pagination/DBpagination';
 import { BackendError } from '../..'
 import { Menu as MenuIcon } from '@mui/icons-material';
+import { ChoiceContext, CrmChoiceActions } from '../../contexts/dialogContext'
 import ExportToExcel from '../../utils/ExportToExcel'
+import NewLeadDialog from '../../components/dialogs/crm/NewLeadDialog'
 import AlertBar from '../../components/snacks/AlertBar'
 import { ILead, ILeadTemplate } from '../../types/crm.types'
-import { FuzzySearchLeads, GetLeads } from '../../services/CrmServices'
-import { ChoiceContext, CrmChoiceActions } from '../../contexts/dialogContext'
-import UploadLeadsExcelButton from '../../components/button/UploadLeadsExcelButton'
-import TableSkeleton from '../../components/skeleton/TableSkeleton'
-import NewLeadDialog from '../../components/dialogs/crm/NewLeadDialog'
-import BulkAssignLeadsDialog from '../../components/dialogs/crm/BulkAssignLeadsDialog'
 import LeadsTable from '../../components/tables/LeadsTable'
+import BulkAssignLeadsDialog from '../../components/dialogs/crm/BulkAssignLeadsDialog'
+import TableSkeleton from '../../components/skeleton/TableSkeleton'
+import UploadLeadsExcelButton from '../../components/button/UploadLeadsExcelButton'
 
 let template: ILeadTemplate[] = [
   {
@@ -48,7 +48,7 @@ let template: ILeadTemplate[] = [
 ]
 
 
-export default function LeadsPage() {
+export default function CustomersPage() {
   const [paginationData, setPaginationData] = useState({ limit: 100, page: 1, total: 1 });
   const [filter, setFilter] = useState<string | undefined>()
   const { user: LoggedInUser } = useContext(UserContext)
@@ -61,9 +61,9 @@ export default function LeadsPage() {
   const [filterCount, setFilterCount] = useState(0)
   const [selectedLeads, setSelectedLeads] = useState<ILead[]>([])
 
-  const { data, isLoading } = useQuery<AxiosResponse<{ leads: ILead[], page: number, total: number, limit: number }>, BackendError>(["leads", paginationData], async () => GetLeads({ limit: paginationData?.limit, page: paginationData?.page }))
+  const { data, isLoading } = useQuery<AxiosResponse<{ leads: ILead[], page: number, total: number, limit: number }>, BackendError>(["customers", paginationData], async () => GetCustomers({ limit: paginationData?.limit, page: paginationData?.page }))
 
-  const { data: fuzzyleads, isLoading: isFuzzyLoading, refetch: refetchFuzzy } = useQuery<AxiosResponse<{ leads: ILead[], page: number, total: number, limit: number }>, BackendError>(["fuzzyleads", filter], async () => FuzzySearchLeads({ searchString: filter, limit: paginationData?.limit, page: paginationData?.page }), {
+  const { data: fuzzyleads, isLoading: isFuzzyLoading, refetch: refetchFuzzy } = useQuery<AxiosResponse<{ leads: ILead[], page: number, total: number, limit: number }>, BackendError>(["fuzzycustomers", filter], async () => FuzzySearchCustomers({ searchString: filter, limit: paginationData?.limit, page: paginationData?.page }), {
     enabled: false
   })
   const [selectedData, setSelectedData] = useState<ILeadTemplate[]>(template)
@@ -74,7 +74,7 @@ export default function LeadsPage() {
   function handleExcel() {
     setAnchorEl(null)
     try {
-      ExportToExcel(selectedData, "leads_data")
+      ExportToExcel(selectedData, "customers_data")
       setSent(true)
       setSelectAll(false)
       setSelectedData([])
@@ -169,6 +169,7 @@ export default function LeadsPage() {
       setFilterCount(count)
     }
   }, [fuzzyleads])
+
   return (
     <>
 
@@ -193,7 +194,7 @@ export default function LeadsPage() {
           component={'h1'}
           sx={{ pl: 1 }}
         >
-          Leads
+          Customers
         </Typography>
 
         <Stack
@@ -209,6 +210,7 @@ export default function LeadsPage() {
                 setFilter(e.currentTarget.value)
                 setFilterCount(0)
               }}
+              autoFocus
               placeholder={`${MemoData?.length} records...`}
               style={{
                 fontSize: '1.1rem',
@@ -259,15 +261,16 @@ export default function LeadsPage() {
                   setAnchorEl(null)
                 }}
               > Add New</MenuItem>
-              <MenuItem
-                onClick={() => {
-                  if (selectedLeads.length === 0)
-                    alert("please select some leads")
-                  else
-                    setChoice({ type: CrmChoiceActions.bulk_assign_leads })
-                  setAnchorEl(null)
-                }}
-              > Assign Leads</MenuItem>
+              {LoggedInUser?.is_admin &&
+                <MenuItem
+                  onClick={() => {
+                    if (selectedLeads.length === 0)
+                      alert("please select some leads")
+                    else
+                      setChoice({ type: CrmChoiceActions.bulk_assign_leads })
+                    setAnchorEl(null)
+                  }}
+                > Assign customers</MenuItem>}
 
               < MenuItem onClick={handleExcel}
               >Export To Excel</MenuItem>
@@ -280,7 +283,8 @@ export default function LeadsPage() {
       </Stack >
       {/* table */}
       {isLoading && <TableSkeleton />}
-      {!isLoading && <LeadsTable
+      {!isLoading && 
+      <LeadsTable
         lead={lead}
         setLead={setLead}
         selectAll={selectAll}
