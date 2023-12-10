@@ -1671,7 +1671,7 @@ export const FuzzySearchUseLessLeads = async (req: Request, res: Response, next:
 }
 
 export const GetUpdatableLeadFields = async (req: Request, res: Response, next: NextFunction) => {
-    let fields = await LeadUpdatableField.find({company:req.user?.company});
+    let fields = await LeadUpdatableField.find({ company: req.user?.company });
     return res.status(200).json(fields)
 }
 
@@ -1703,39 +1703,46 @@ export const BackUpAllLeads = async (req: Request, res: Response, next: NextFunc
 export const CreateLead = async (req: Request, res: Response, next: NextFunction) => {
     let body = JSON.parse(req.body.body)
     let { mobile, remark, lead_owners, alternate_mobile1, alternate_mobile2 } = body as TLeadBody & { remark: string, lead_owners: string[] }
-    if (!lead_owners)
-        return res.status(400).json({ message: "assign at least one lead owner" });
-    if (lead_owners.length < 1)
-        return res.status(400).json({ message: "assign at least one lead owner" });
+
     // validations
     if (!mobile)
         return res.status(400).json({ message: "provide primary mobile number" });
 
-    let uniqueNumbers: string[] = []
-    let oldLeads = await Lead.find({ company: req.user?.company })
-    let OldNumbers: string[] = []
-    oldLeads.forEach((lead) => {
-        if (lead.mobile)
-            OldNumbers.push(lead.mobile)
-        if (lead.alternate_mobile1)
-            OldNumbers.push(lead.alternate_mobile1)
-        if (lead.alternate_mobile2)
-            OldNumbers.push(lead.alternate_mobile2)
+    let uniqueNumbers = [mobile]
+    if (alternate_mobile1)
+        uniqueNumbers.push(alternate_mobile1)
+    if (alternate_mobile2)
+        uniqueNumbers.push(alternate_mobile2)
+    uniqueNumbers = uniqueNumbers.filter((item, i, ar) => ar.indexOf(item) === i);
+
+    let testlead = await Lead.findOne({
+        company: req.user?.company,
+        $and: [
+            {
+                $or: [
+                    { mobile: mobile },
+                    { alternate_mobile1: alternate_mobile1 },
+                    { alternate_mobile2: alternate_mobile2 },
+                ]
+            },
+            {
+                $or: [
+                    { mobile: mobile },
+                    { alternate_mobile1: alternate_mobile1 },
+                    { alternate_mobile2: alternate_mobile2 },
+                ]
+            },
+            {
+                $or: [
+                    { mobile: mobile },
+                    { alternate_mobile1: alternate_mobile1 },
+                    { alternate_mobile2: alternate_mobile2 },
+                ]
+            }
+        ]
     })
 
-    if (mobile && !OldNumbers.includes(mobile)) {
-        uniqueNumbers.push(mobile)
-        OldNumbers.push(mobile)
-    }
-    if (alternate_mobile1 && !OldNumbers.includes(alternate_mobile1)) {
-        uniqueNumbers.push(alternate_mobile1)
-        OldNumbers.push(alternate_mobile1)
-    }
-    if (alternate_mobile2 && !OldNumbers.includes(alternate_mobile2)) {
-        uniqueNumbers.push(alternate_mobile2)
-        OldNumbers.push(alternate_mobile2)
-    }
-    if (uniqueNumbers.length == 0) {
+    if (testlead) {
         return res.status(400).json({ message: "one of the mobile numbers already exists" });
     }
     let new_lead_owners: IUser[] = []
@@ -1801,40 +1808,57 @@ export const UpdateLead = async (req: Request, res: Response, next: NextFunction
     if (!lead) {
         return res.status(404).json({ message: "lead not found" })
     }
-    if (!lead_owners)
-        return res.status(400).json({ message: "assign at least one lead owner" });
-    if (lead_owners.length < 1)
-        return res.status(400).json({ message: "assign at least one lead owner" });
     // validations
     if (!mobile)
         return res.status(400).json({ message: "provide primary mobile number" });
 
-    let uniqueNumbers: string[] = []
-    let oldLeads = await Lead.find({ company: req.user?.company })
-    let OldNumbers: string[] = []
-    oldLeads.forEach((lead) => {
-        if (lead.mobile)
-            OldNumbers.push(lead.mobile)
-        if (lead.alternate_mobile1)
-            OldNumbers.push(lead.alternate_mobile1)
-        if (lead.alternate_mobile2)
-            OldNumbers.push(lead.alternate_mobile2)
+    let existingNumbers = []
+    if (lead.mobile)
+        existingNumbers.push(mobile)
+    if (lead.alternate_mobile1)
+        existingNumbers.push(lead.alternate_mobile1)
+    if (lead.alternate_mobile2)
+        existingNumbers.push(lead.alternate_mobile2)
+
+    let uniqueNumbers = []
+    if (!existingNumbers.includes(mobile))
+        uniqueNumbers[0] = mobile
+    if (!existingNumbers.includes(alternate_mobile1))
+        uniqueNumbers[1] = alternate_mobile1
+    if (!existingNumbers.includes(alternate_mobile2))
+        uniqueNumbers[2] = alternate_mobile2
+
+    let testlead = await Lead.findOne({
+        company: req.user?.company,
+        $and: [
+            {
+                $or: [
+                    { mobile: uniqueNumbers[0] },
+                    { alternate_mobile1: uniqueNumbers[1] },
+                    { alternate_mobile2: uniqueNumbers[2] },
+                ]
+            },
+            {
+                $or: [
+                    { mobile: uniqueNumbers[0] },
+                    { alternate_mobile1: uniqueNumbers[1] },
+                    { alternate_mobile2: uniqueNumbers[2] },
+                ]
+            },
+            {
+                $or: [
+                    { mobile: uniqueNumbers[0] },
+                    { alternate_mobile1: uniqueNumbers[1] },
+                    { alternate_mobile2: uniqueNumbers[2] },
+                ]
+            }
+        ]
     })
-    if (mobile !== lead.mobile)
-        if (mobile && !OldNumbers.includes(mobile)) {
-            uniqueNumbers[0] = (mobile)
-            OldNumbers.push(mobile)
-        }
-    if (alternate_mobile1 !== lead.alternate_mobile1)
-        if (alternate_mobile1 && !OldNumbers.includes(alternate_mobile1)) {
-            uniqueNumbers[1] = (alternate_mobile1)
-            OldNumbers.push(alternate_mobile1)
-        }
-    if (alternate_mobile2 !== lead.alternate_mobile2)
-        if (alternate_mobile2 && !OldNumbers.includes(alternate_mobile2)) {
-            uniqueNumbers[2] = (alternate_mobile2)
-            OldNumbers.push(alternate_mobile2)
-        }
+    if (testlead) {
+        return res.status(400).json({ message: "one of the mobile numbers already exists" });
+    }
+
+
     let new_lead_owners: IUser[] = []
     let owners = String(lead_owners).split(",")
     for (let i = 0; i < owners.length; i++) {
@@ -1889,7 +1913,7 @@ export const UpdateLead = async (req: Request, res: Response, next: NextFunction
     }
     await Lead.findByIdAndUpdate(lead._id, {
         ...body,
-        mobile: uniqueNumbers[0] || lead.mobile || null,
+        mobile: uniqueNumbers[0] || null,
         alternate_mobile1: uniqueNumbers[1] || null,
         alternate_mobile2: uniqueNumbers[2] || null,
         lead_owners: new_lead_owners,
