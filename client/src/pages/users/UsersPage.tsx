@@ -17,6 +17,7 @@ import DBPagination from '../../components/pagination/DBpagination'
 import TableSkeleton from '../../components/skeleton/TableSkeleton'
 import { UserContext } from '../../contexts/userContext'
 
+
 type SelectedData = {
     username?: string,
     email?: string,
@@ -26,8 +27,6 @@ type SelectedData = {
     email_verified?: Boolean,
     is_active?: Boolean,
     is_admin?: Boolean,
-    is_owner?: Boolean,
-    is_manager?: Boolean,
     last_login?: Date,
     created_at?: Date,
     createdBy?: string
@@ -77,12 +76,6 @@ export default function UsersPage() {
     useEffect(() => {
         let data: SelectedData[] = []
         selectedUsers.map((user) => {
-            let lastlogin = undefined
-            let created_at = undefined
-            if (user.last_login && user.created_at) {
-                lastlogin = new Date(user.last_login).toLocaleDateString()
-                created_at = new Date(user.created_at).toLocaleDateString()
-            }
             return data.push({
                 username: user.username,
                 email: user.email,
@@ -92,8 +85,6 @@ export default function UsersPage() {
                 email_verified: user.email_verified,
                 is_active: user.is_active,
                 is_admin: user.is_admin,
-                is_owner: user.is_owner,
-                is_manager: user.is_manager,
                 last_login: user.last_login,
                 created_at: user.created_at,
                 createdBy: user.created_by.username,
@@ -231,12 +222,12 @@ export default function UsersPage() {
                         >
                             {
                                 loggedInUser?.user_access_fields.is_editable &&
+
                                 <MenuItem onClick={() => {
                                     setChoice({ type: UserChoiceActions.new_user })
                                     setAnchorEl(null)
                                 }}
                                 >New User</MenuItem>}
-
                             <MenuItem onClick={handleExcel}
                             >Export To Excel</MenuItem>
                         </Menu>

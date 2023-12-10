@@ -12,13 +12,11 @@ export type IUser = {
     is_admin: Boolean,
     email_verified: Boolean,
     mobile_verified: Boolean,
-    is_owner: Boolean,
     company: ICompany,
     is_active: Boolean,
     last_login: Date,
     multi_login_token: string | null,
     is_multi_login: boolean,
-    is_manager: boolean,
     assigned_users: IUser[]
     client_id: string,
     client_data_path: string,

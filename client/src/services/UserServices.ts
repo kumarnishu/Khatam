@@ -1,8 +1,8 @@
-import { UserAccess } from "../types/access.types";
+import { Access } from "../types/access.types";
 import { apiClient } from "./utils/AxiosInterceptor";
 
 export type AccessTypes = {
-  user_access_fields: UserAccess,
+  user_access_fields: Access,
 }
 // login
 export const Login = async (
@@ -84,18 +84,11 @@ export const MakeAdmin = async (id: string) => {
 export const RemoveAdmin = async (id: string) => {
   return await apiClient.patch(`remove-admin/user/${id}`)
 }
-// make manager
-export const MakeManager = async (id: string) => {
-  return await apiClient.patch(`make-manager/user/${id}`)
-}
-// revoke permissions of a manager 
-export const RemoveManager = async (id: string) => {
-  return await apiClient.patch(`remove-manager/user/${id}`)
+
+export const AssignUsers = async ({ id, body }: { id: string, body: { ids: string[] } }) => {
+  return await apiClient.patch(`assign/users/${id}`, body)
 }
 
-export const AssignUsersToManager = async ({ id, body }: { id: string, body: { ids: string[] } }) => {
-  return await apiClient.patch(`assign/users/${id}`), body
-}
 // get profile
 export const GetProfile = async () => {
   return await apiClient.get("profile");

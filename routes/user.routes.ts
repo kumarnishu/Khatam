@@ -1,7 +1,7 @@
 import express from "express";
 import multer from "multer";
 
-import { BlockUser, GetProfile, GetUsers, Login, Logout, MakeAdmin, NewUser, RemoveAdmin, ResetPassword, SendPasswordResetMail, SendVerifyEmail, SignUp, UnBlockUser, UpdateAccessFields, UpdateProfile, UpdateUser, VerifyEmail, updatePassword, resetUserPassword, FuzzySearchUsers, GetPaginatedUsers, AllowMultiLogin, BlockMultiLogin, MakeManager, RemoveManager, AssignUserstoManager } from "../controllers/user.controller";
+import { BlockUser, GetProfile, GetUsers, Login, Logout, MakeAdmin, NewUser, RemoveAdmin, ResetPassword, SendPasswordResetMail, SendVerifyEmail, SignUp, UnBlockUser, UpdateAccessFields, UpdateProfile, UpdateUser, VerifyEmail, updatePassword, resetUserPassword, FuzzySearchUsers, GetPaginatedUsers, AllowMultiLogin, BlockMultiLogin, AssignUsers } from "../controllers/user.controller";
 import { isAdmin, isAuthenticatedUser, isProfileAuthenticated, } from "../middlewares/auth.middleware";
 
 export const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 1024 * 1024 * 50 } })
@@ -16,15 +16,13 @@ router.route("/users/paginated").get(isAuthenticatedUser, GetPaginatedUsers)
 router.route("/users/:id")
     .put(isAuthenticatedUser, upload.single("dp"), UpdateUser)
 router.patch("/make-admin/user/:id", isAuthenticatedUser, isAdmin, MakeAdmin)
-router.patch("/make-manager/user/:id", isAuthenticatedUser, isAdmin, MakeManager)
 router.patch("/allow/multi_login/:id", isAuthenticatedUser, isAdmin, AllowMultiLogin)
 router.patch("/block/multi_login/:id", isAuthenticatedUser, isAdmin, BlockMultiLogin)
 router.patch("/block/user/:id", isAuthenticatedUser, isAdmin, BlockUser)
 router.patch("/unblock/user/:id", isAuthenticatedUser, isAdmin, UnBlockUser)
 router.patch("/remove-admin/user/:id", isAuthenticatedUser, isAdmin, RemoveAdmin)
-router.patch("/remove-manager/user/:id", isAuthenticatedUser, isAdmin, RemoveManager)
 router.patch("/update/access/user/:id", isAuthenticatedUser, UpdateAccessFields)
-router.patch("/assign/users/:id", isAuthenticatedUser, AssignUserstoManager)
+router.patch("/assign/users/:id", isAuthenticatedUser, AssignUsers)
 router.post("/login", Login)
 router.post("/logout", Logout)
 router.route("/profile")

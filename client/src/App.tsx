@@ -12,7 +12,6 @@ function App() {
     <>
       {!loading && < AppRoutes />}
       {loading && <LinearProgress />}
-
     </>
   )
 }

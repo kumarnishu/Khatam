@@ -16,7 +16,7 @@ export const GetPaginatedUsers = async (req: Request, res: Response, next: NextF
     let limit = Number(req.query.limit)
     let page = Number(req.query.page)
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
-        let users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by")
+        let users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
         users = users.slice((page - 1) * limit, limit * page)
         let count = await User.countDocuments()
         return res.status(200).json({
@@ -31,7 +31,7 @@ export const GetPaginatedUsers = async (req: Request, res: Response, next: NextF
 }
 
 export const GetUsers = async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by")
+    const users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
     res.status(200).json(users)
 }
 
@@ -163,7 +163,7 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
 
 export const GetProfile = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.user?._id
-    const user = await User.findById(id).populate('company').populate("created_by").populate("updated_by")
+    const user = await User.findById(id).populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
     res.status(200).json(user)
 }
 
@@ -234,7 +234,7 @@ export const SignUp = async (req: Request, res: Response, next: NextFunction) =>
     await owner.save()
     await new_company.save()
     sendUserToken(res, await owner.getAccessToken())
-    let result = await User.findById(owner._id).populate("company").populate('company').populate("created_by").populate("updated_by")
+    let result = await User.findById(owner._id).populate("company").populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
     res.status(201).json(result)
 }
 
@@ -303,13 +303,13 @@ export const Login = async (req: Request, res: Response, next: NextFunction) => 
 
     let user = await User.findOne({
         username: String(username).toLowerCase().trim(),
-    }).select("+password").populate('company').populate("created_by").populate("updated_by")
+    }).select("+password").populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
 
 
     if (!user) {
         user = await User.findOne({
             email: String(username).toLowerCase().trim(),
-        }).select("+password").populate('company').populate("created_by").populate("updated_by")
+        }).select("+password").populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
         if (user)
             if (!user.email_verified)
                 return res.status(403).json({ message: "please verify email id before login" })
@@ -543,24 +543,9 @@ export const MakeAdmin = async (req: Request, res: Response, next: NextFunction)
     res.status(200).json({ message: "admin role provided successfully" });
 }
 
-export const MakeManager = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    if (!isMongoId(id)) return res.status(400).json({ message: "user id not valid" })
-    let user = await User.findById(id)
-    if (!user) {
-        return res.status(404).json({ message: "user not found" })
-    }
-    if (user.is_manager)
-        return res.status(404).json({ message: "already a manager" })
-    user.is_manager = true
-    if (req.user) {
-        user.updated_by = user
-    }
-    await user.save();
-    res.status(200).json({ message: "manager role provided successfully" });
-}
 
-export const AssignUserstoManager = async (req: Request, res: Response, next: NextFunction) => {
+
+export const AssignUsers = async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;
     const { ids } = req.body as { ids: string[] }
     if (!isMongoId(id)) return res.status(400).json({ message: "manager id not valid" })
@@ -569,11 +554,13 @@ export const AssignUserstoManager = async (req: Request, res: Response, next: Ne
         return res.status(404).json({ message: "manager not found" })
     }
     let users: IUser[] = []
-    ids.forEach(async (_id) => {
-        let _user = await User.findById(_id)
-        if (_user)
-            users.push(_user)
-    })
+    for (let i = 0; i < ids.length; i++) {
+        let user = await User.findById(ids[i])
+        if (user)
+            users.push(user)
+    }
+
+    console.log(users)
     user.assigned_users = users
     if (req.user) {
         user.updated_by = user
@@ -649,20 +636,6 @@ export const UnBlockUser = async (req: Request, res: Response, next: NextFunctio
     }
     await user.save();
     res.status(200).json({ message: "user unblocked successfully" });
-}
-export const RemoveManager = async (req: Request, res: Response, next: NextFunction) => {
-    const id = req.params.id;
-    if (!isMongoId(id)) return res.status(400).json({ message: "user id not valid" })
-    let user = await User.findById(id)
-    if (!user) {
-        return res.status(404).json({ message: "user not found" })
-    }
-    user.is_manager = false
-    if (req.user) {
-        user.updated_by = user
-    }
-    await user.save();
-    res.status(200).json({ message: "removed manager role successfully" });
 }
 
 export const RemoveAdmin = async (req: Request, res: Response, next: NextFunction) => {

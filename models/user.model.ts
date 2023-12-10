@@ -82,16 +82,7 @@ const UserSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {}, IUserMet
         default: true,
         required: true
     },
-    is_manager: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
-    is_owner: {
-        type: Boolean,
-        default: false,
-        required: true
-    },
+    
     user_access_fields: {
         is_hidden: { type: Boolean, default: false },
         is_deletion_allowed: { type: Boolean, default: false },

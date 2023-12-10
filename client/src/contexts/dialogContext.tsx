@@ -1,7 +1,6 @@
 import React, { useReducer } from "react"
 
-type UserChoices = "signup" | "reset_password_mail" | "close_user" | "new_user" | "update_user" | "update_profile" | "view_profile" | "update_password" | "reset_password" | "verify_email" | "control_access" | "delete_user" | "toogle_flow_status" |
-  "block_user" | "unblock_user" | "make_admin" | "remove_admin" | "refresh_whatsapp" | "update_user_password" | "block_multi_login" | "reset_multi_login" | "make_manager" | "remove_manager" | "assign_users"
+type UserChoices = "signup" | "reset_password_mail" | "close_user" | "new_user" | "update_user" | "update_profile" | "view_profile" | "update_password" | "reset_password" | "verify_email" | "control_access" | "delete_user" | "toogle_flow_status" | "block_user" | "unblock_user" | "make_admin" | "remove_admin" | "refresh_whatsapp" | "update_user_password" | "block_multi_login" | "reset_multi_login" | "assign_users"
 
 type ChoiceState = UserChoices
 
@@ -29,8 +28,6 @@ export enum UserChoiceActions {
   update_user_password = "update_user_password",
   block_multi_login = "block_multi_login",
   reset_multi_login = "reset_multi_login",
-  make_manager = "make_manager",
-  remove_manager = "remove_manager",
   assign_users = "assign_users"
 }
 
@@ -62,8 +59,6 @@ function reducer(state: ChoiceState | null, action: Action) {
     case UserChoiceActions.update_user_password: return type
     case UserChoiceActions.reset_multi_login: return type
     case UserChoiceActions.block_multi_login: return type
-    case UserChoiceActions.make_manager: return type
-    case UserChoiceActions.remove_manager: return type
     case UserChoiceActions.assign_users: return type
 
     default: return state
