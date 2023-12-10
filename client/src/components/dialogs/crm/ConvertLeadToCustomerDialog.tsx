@@ -23,7 +23,7 @@ function ConvertLeadToCustomerDialog({ lead }: { lead: ILead }) {
                 <Typography variant="body1" color="error">
                     {`This will make a new customer with ${lead.mobile}`}
                 </Typography>
-                <ConvertLeadToCustomerForm lead={lead} /> z
+                <ConvertLeadToCustomerForm lead={lead} /> 
             </DialogContent>
         </Dialog >
     )

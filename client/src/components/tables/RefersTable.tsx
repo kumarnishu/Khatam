@@ -292,7 +292,7 @@ function RefersTable({ refer, selectAll, refers, setSelectAll, setRefer, selecte
 
                                         </STableCell>
                                         <STableCell>
-                                            {refer.party.lead_owners ? refer.party.lead_owners.map((owner) => { return owner.username + ", " }) : [""]}
+                                            {refer.party.lead_owners ? refer.party.lead_owners.map((owner) => { return owner.username }).toString() : [""]}
                                         </STableCell>
                                         <STableCell                     >
 

@@ -19,15 +19,11 @@ const template = {
 function UpdateLeadFieldsPage() {
     const { user } = useContext(UserContext)
     const { mutate, isLoading, isSuccess } = useMutation
-        <AxiosResponse<ILeadUpdatableField>, BackendError, {
-            stages: string[],
-            lead_types: string[],
-            lead_sources: string[],
-        }>(UpdateLeadFieldsUpdatable, {
-            onSuccess: () => queryClient.invalidateQueries("updateble-lead-leads")
+        <AxiosResponse<ILeadUpdatableField>, BackendError, ILeadUpdatableField>(UpdateLeadFieldsUpdatable, {
+            onSuccess: () => queryClient.invalidateQueries("updateble-lead-fields")
         })
 
-    const { data, isSuccess: isFieldsSuccess } = useQuery<AxiosResponse<ILeadUpdatableField>, BackendError>("updateble-lead-leads", GetLeadFieldsUpdatable)
+    const { data, isSuccess: isFieldsSuccess } = useQuery<AxiosResponse<ILeadUpdatableField>, BackendError>("updateble-lead-fields", GetLeadFieldsUpdatable)
 
 
     const [fields, setFields] = useState<ILeadUpdatableField>(template)
@@ -37,10 +33,10 @@ function UpdateLeadFieldsPage() {
 
 
     useEffect(() => {
-        if (isFieldsSuccess && data.data) {
+        if (data && data.data) {
             setFields(data?.data)
         }
-    }, [isFieldsSuccess, data])
+    }, [isFieldsSuccess])
     return (
         <>
             {isLoading && <LinearProgress />}

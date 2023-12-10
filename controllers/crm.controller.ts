@@ -35,7 +35,7 @@ export const GetLeads = async (req: Request, res: Response, next: NextFunction) 
                         model: 'User'
                     }
                 ]
-            }).sort('-updated_at').skip((page - 1) * limit).limit(limit)
+            }).sort('-created_at').skip((page - 1) * limit).limit(limit)
             count = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] } }).countDocuments()
         }
 
@@ -1671,7 +1671,7 @@ export const FuzzySearchUseLessLeads = async (req: Request, res: Response, next:
 }
 
 export const GetUpdatableLeadFields = async (req: Request, res: Response, next: NextFunction) => {
-    let fields = await LeadUpdatableField.find({ company: req.user?.company });
+    let fields = await LeadUpdatableField.findOne({ company: req.user?.company });
     return res.status(200).json(fields)
 }
 
@@ -1708,43 +1708,27 @@ export const CreateLead = async (req: Request, res: Response, next: NextFunction
     if (!mobile)
         return res.status(400).json({ message: "provide primary mobile number" });
 
-    let uniqueNumbers = [mobile]
+    let uniqueNumbers = []
+    if (mobile)
+        uniqueNumbers.push(mobile)
     if (alternate_mobile1)
         uniqueNumbers.push(alternate_mobile1)
     if (alternate_mobile2)
         uniqueNumbers.push(alternate_mobile2)
+
     uniqueNumbers = uniqueNumbers.filter((item, i, ar) => ar.indexOf(item) === i);
 
-    let testlead = await Lead.findOne({
-        company: req.user?.company,
-        $and: [
-            {
-                $or: [
-                    { mobile: mobile },
-                    { alternate_mobile1: alternate_mobile1 },
-                    { alternate_mobile2: alternate_mobile2 },
-                ]
-            },
-            {
-                $or: [
-                    { mobile: mobile },
-                    { alternate_mobile1: alternate_mobile1 },
-                    { alternate_mobile2: alternate_mobile2 },
-                ]
-            },
-            {
-                $or: [
-                    { mobile: mobile },
-                    { alternate_mobile1: alternate_mobile1 },
-                    { alternate_mobile2: alternate_mobile2 },
-                ]
-            }
-        ]
-    })
+    if (uniqueNumbers[0] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[0] }, { alternate_mobile1: uniqueNumbers[0] }, { alternate_mobile2: uniqueNumbers[0] }] }))
+        return res.status(400).json({ message: `${mobile} already exists ` })
 
-    if (testlead) {
-        return res.status(400).json({ message: "one of the mobile numbers already exists" });
-    }
+
+    if (uniqueNumbers[1] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[1] }, { alternate_mobile1: uniqueNumbers[1] }, { alternate_mobile2: uniqueNumbers[1] }] }))
+        return res.status(400).json({ message: `${uniqueNumbers[1]} already exists ` })
+
+    if (uniqueNumbers[2] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[2] }, { alternate_mobile1: uniqueNumbers[2] }, { alternate_mobile2: uniqueNumbers[2] }] }))
+        return res.status(400).json({ message: `${uniqueNumbers[2]} already exists ` })
+
+
     let new_lead_owners: IUser[] = []
     let owners = String(lead_owners).split(",")
     for (let i = 0; i < owners.length; i++) {
@@ -1812,51 +1796,46 @@ export const UpdateLead = async (req: Request, res: Response, next: NextFunction
     if (!mobile)
         return res.status(400).json({ message: "provide primary mobile number" });
 
-    let existingNumbers = []
-    if (lead.mobile)
-        existingNumbers.push(mobile)
-    if (lead.alternate_mobile1)
-        existingNumbers.push(lead.alternate_mobile1)
-    if (lead.alternate_mobile2)
-        existingNumbers.push(lead.alternate_mobile2)
+
 
     let uniqueNumbers = []
-    if (!existingNumbers.includes(mobile))
-        uniqueNumbers[0] = mobile
-    if (!existingNumbers.includes(alternate_mobile1))
-        uniqueNumbers[1] = alternate_mobile1
-    if (!existingNumbers.includes(alternate_mobile2))
-        uniqueNumbers[2] = alternate_mobile2
-
-    let testlead = await Lead.findOne({
-        company: req.user?.company,
-        $and: [
-            {
-                $or: [
-                    { mobile: uniqueNumbers[0] },
-                    { alternate_mobile1: uniqueNumbers[1] },
-                    { alternate_mobile2: uniqueNumbers[2] },
-                ]
-            },
-            {
-                $or: [
-                    { mobile: uniqueNumbers[0] },
-                    { alternate_mobile1: uniqueNumbers[1] },
-                    { alternate_mobile2: uniqueNumbers[2] },
-                ]
-            },
-            {
-                $or: [
-                    { mobile: uniqueNumbers[0] },
-                    { alternate_mobile1: uniqueNumbers[1] },
-                    { alternate_mobile2: uniqueNumbers[2] },
-                ]
-            }
-        ]
-    })
-    if (testlead) {
-        return res.status(400).json({ message: "one of the mobile numbers already exists" });
+    if (mobile) {
+        if (mobile === lead.mobile) {
+            uniqueNumbers[0] = lead.mobile
+        }
+        if (mobile !== lead.mobile) {
+            uniqueNumbers[0] = mobile
+        }
     }
+    if (alternate_mobile1) {
+        if (alternate_mobile1 === lead.alternate_mobile1) {
+            uniqueNumbers[1] = lead.alternate_mobile1
+        }
+        if (alternate_mobile1 !== lead.alternate_mobile1) {
+            uniqueNumbers[1] = alternate_mobile1
+        }
+    }
+    if (alternate_mobile2) {
+        if (alternate_mobile2 === lead.alternate_mobile2) {
+            uniqueNumbers[2] = lead.alternate_mobile2
+        }
+        if (alternate_mobile2 !== lead.alternate_mobile2) {
+            uniqueNumbers[2] = alternate_mobile2
+        }
+    }
+
+    uniqueNumbers = uniqueNumbers.filter((item, i, ar) => ar.indexOf(item) === i);
+
+
+    if (uniqueNumbers[0] && uniqueNumbers[0] !== lead.mobile && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[0] }, { alternate_mobile1: uniqueNumbers[0] }, { alternate_mobile2: uniqueNumbers[0] }] }))
+        return res.status(400).json({ message: `${mobile} already exists ` })
+
+
+    if (uniqueNumbers[1] && uniqueNumbers[1] !== lead.alternate_mobile1 && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[1] }, { alternate_mobile1: uniqueNumbers[1] }, { alternate_mobile2: uniqueNumbers[1] }] }))
+        return res.status(400).json({ message: `${uniqueNumbers[1]} already exists ` })
+
+    if (uniqueNumbers[2] && uniqueNumbers[2] !== lead.alternate_mobile2 && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[2] }, { alternate_mobile1: uniqueNumbers[2] }, { alternate_mobile2: uniqueNumbers[2] }] }))
+        return res.status(400).json({ message: `${uniqueNumbers[2]} already exists ` })
 
 
     let new_lead_owners: IUser[] = []
@@ -2015,16 +1994,6 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
             workbook.Sheets[workbook_sheet[0]]
         );
         let statusText: string = ""
-        let oldLeads = await Lead.find({ company: req.user?.company })
-        let OldNumbers: number[] = []
-        oldLeads.forEach((lead) => {
-            if (lead.mobile)
-                OldNumbers.push(Number(lead.mobile))
-            if (lead.alternate_mobile1)
-                OldNumbers.push(Number(lead.alternate_mobile1))
-            if (lead.alternate_mobile2)
-                OldNumbers.push(Number(lead.alternate_mobile2))
-        })
 
         let new_lead_owners: IUser[] = []
         workbook_response.forEach(async (lead) => {
@@ -2070,25 +2039,31 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                 statusText = "invalid date"
             }
 
-            // duplicate number checker
-            let uniqueNumbers: number[] = []
-            if (mobile && !OldNumbers.includes(mobile)) {
-                uniqueNumbers.push(mobile)
-                OldNumbers.push(mobile)
+            let uniqueNumbers = []
+            if (mobile)
+                uniqueNumbers.push(String(mobile))
+            if (alternate_mobile1)
+                uniqueNumbers.push(String(alternate_mobile1))
+            if (alternate_mobile2)
+                uniqueNumbers.push(String(alternate_mobile2))
 
-            }
-            else
-                statusText = "duplicate"
-            if (alternate_mobile1 && !OldNumbers.includes(alternate_mobile1)) {
-                uniqueNumbers.push(alternate_mobile1)
-                OldNumbers.push(alternate_mobile1)
-            }
-            if (alternate_mobile2 && !OldNumbers.includes(alternate_mobile2)) {
-                uniqueNumbers.push(alternate_mobile2)
-                OldNumbers.push(alternate_mobile2)
-            }
-            if (uniqueNumbers.length === 0)
+            uniqueNumbers = uniqueNumbers.filter((item, i, ar) => ar.indexOf(item) === i);
+
+            if (uniqueNumbers[0] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[0] }, { alternate_mobile1: uniqueNumbers[0] }, { alternate_mobile2: uniqueNumbers[0] }] })) {
                 validated = false
+                statusText = "duplicate"
+            }
+
+
+            if (uniqueNumbers[1] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[1] }, { alternate_mobile1: uniqueNumbers[1] }, { alternate_mobile2: uniqueNumbers[1] }] })) {
+                validated = false
+                statusText = "duplicate"
+            }
+
+            if (uniqueNumbers[2] && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[2] }, { alternate_mobile1: uniqueNumbers[2] }, { alternate_mobile2: uniqueNumbers[2] }] })) {
+                validated = false
+                statusText = "duplicate"
+            }
 
             if (!isMongoId(String(lead._id)) && !validated) {
                 result.push({
@@ -2109,47 +2084,87 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
             //update and create new nead
             console.log(validated)
             if (lead._id && isMongoId(String(lead._id))) {
-                console.log(new_lead_owners)
                 create_operation = false
                 let targetLead = await Lead.findById(lead._id)
+                let uniqueNumbers = []
+
                 if (targetLead) {
-                    if (lead.remarks) {
-                        if (!lead.remarks.length) {
-                            let new_remark = new Remark({
-                                remark: lead.remarks,
-                                lead: lead,
-                                created_at: new Date(),
-                                created_by: req.user,
-                                updated_at: new Date(),
-                                updated_by: req.user
-                            })
-                            await new_remark.save()
-                            targetLead.last_remark = lead.remarks
-                            targetLead.remarks = [new_remark]
+                    if (mobile) {
+                        if (String(mobile) === targetLead.mobile) {
+                            uniqueNumbers[0] = targetLead.mobile
                         }
-                        else {
-                            let last_remark = targetLead.remarks[targetLead.remarks.length - 1]
-                            await Remark.findByIdAndUpdate(last_remark._id, {
-                                remark: lead.remarks,
-                                lead: lead,
-                                updated_at: new Date(),
-                                updated_by: req.user
-                            })
-                            targetLead.last_remark = last_remark.remark
+                        if (String(mobile) !== targetLead.mobile) {
+                            uniqueNumbers[0] = String(mobile)
                         }
-
                     }
+                    if (alternate_mobile1) {
+                        if (String(alternate_mobile1) === targetLead.alternate_mobile1) {
+                            uniqueNumbers[1] = targetLead.alternate_mobile1
+                        }
+                        if (String(alternate_mobile1) !== targetLead.alternate_mobile1) {
+                            uniqueNumbers[1] = String(alternate_mobile1)
+                        }
+                    }
+                    if (alternate_mobile2) {
+                        if (String(alternate_mobile2) === targetLead.alternate_mobile2) {
+                            uniqueNumbers[2] = targetLead.alternate_mobile2
+                        }
+                        if (String(alternate_mobile2) !== targetLead.alternate_mobile2) {
+                            uniqueNumbers[2] = String(alternate_mobile2)
+                        }
+                        uniqueNumbers = uniqueNumbers.filter((item, i, ar) => ar.indexOf(item) === i);
+                    }
+                    let passed = true
 
-                    await Lead.findByIdAndUpdate(lead._id, {
-                        ...lead,
-                        remarks: targetLead.remarks,
-                        mobile: uniqueNumbers[0] || mobile,
-                        alternate_mobile1: uniqueNumbers[1] || alternate_mobile1 || null,
-                        alternate_mobile2: uniqueNumbers[2] || alternate_mobile2 || null,
-                        lead_owners: new_lead_owners,
-                        updated_by: req.user,
-                        updated_at: new Date(Date.now())
-                    })
+                    if (uniqueNumbers[0] && uniqueNumbers[0] !== targetLead.mobile && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[0] }, { alternate_mobile1: uniqueNumbers[0] }, { alternate_mobile2: uniqueNumbers[0] }] }))
+                        passed = false
+
+
+                    if (uniqueNumbers[1] && uniqueNumbers[1] !== targetLead.alternate_mobile1 && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[1] }, { alternate_mobile1: uniqueNumbers[1] }, { alternate_mobile2: uniqueNumbers[1] }] }))
+                        passed = false
+
+                    if (uniqueNumbers[2] && uniqueNumbers[2] !== targetLead.alternate_mobile2 && await Lead.findOne({ company: req.user?.company, $or: [{ mobile: uniqueNumbers[2] }, { alternate_mobile1: uniqueNumbers[2] }, { alternate_mobile2: uniqueNumbers[2] }] }))
+                        passed = false
+                    if (passed) {
+                        if (lead.remarks) {
+                            if (!lead.remarks.length) {
+                                let new_remark = new Remark({
+                                    remark: lead.remarks,
+                                    lead: lead,
+                                    created_at: new Date(),
+                                    created_by: req.user,
+                                    updated_at: new Date(lead.updated_at) || new Date(),
+                                    updated_by: req.user,
+                                    company: req.user?.company
+                                })
+                                await new_remark.save()
+                                targetLead.last_remark = lead.remarks
+                                targetLead.remarks = [new_remark]
+                            }
+                            else {
+                                let last_remark = targetLead.remarks[targetLead.remarks.length - 1]
+                                await Remark.findByIdAndUpdate(last_remark._id, {
+                                    remark: lead.remarks,
+                                    lead: lead,
+                                    updated_at: new Date(lead.updated_at) || new Date(),
+                                    updated_by: req.user
+                                })
+                                targetLead.last_remark = last_remark.remark
+                            }
+
+                        }
+
+                        await Lead.findByIdAndUpdate(lead._id, {
+                            ...lead,
+                            remarks: targetLead.remarks,
+                            mobile: uniqueNumbers[0] || null,
+                            alternate_mobile1: uniqueNumbers[1] || null,
+                            alternate_mobile2: uniqueNumbers[2] || null,
+                            lead_owners: new_lead_owners,
+                            updated_at: new Date(lead.updated_at) || new Date(),
+                            updated_by: req.user
+                        })
+                    }
                 }
 
             }
@@ -2163,19 +2178,20 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                         alternate_mobile1: uniqueNumbers[1] || null,
                         alternate_mobile2: uniqueNumbers[2] || null,
                         lead_owners: new_lead_owners,
+                        created_at: new Date(lead.created_at) || new Date(),
                         created_by: req.user,
+                        updated_at: new Date(lead.updated_at) || new Date(),
                         updated_by: req.user,
-                        updated_at: new Date(Date.now()),
-                        created_at: new Date(Date.now()),
                         remarks: undefined
                     })
                     if (lead.remarks) {
                         let new_remark = new Remark({
                             remark: lead.remarks,
                             lead: newlead,
-                            created_at: new Date(),
+                            created_at: new Date(lead.created_at) || new Date(),
                             created_by: req.user,
-                            updated_at: new Date(),
+                            company: req.user?.company,
+                            updated_at: new Date(lead.updated_at) || new Date(),
                             updated_by: req.user
                         })
                         await new_remark.save()
@@ -2191,8 +2207,6 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
         })
 
     }
-    if (!create_operation && String(req.user?._id) !== String(req.user?.created_by._id))
-        return res.status(403).json({ message: "not allowed this operation" })
     return res.status(200).json(result);
 
 }
@@ -2213,6 +2227,7 @@ export const ConvertCustomer = async (req: Request, res: Response, next: NextFun
             created_at: new Date(),
             created_by: req.user,
             updated_at: new Date(),
+            company: req.user?.company,
             updated_by: req.user
         })
         await new_remark.save()
@@ -2246,6 +2261,7 @@ export const ToogleUseless = async (req: Request, res: Response, next: NextFunct
                 created_at: new Date(),
                 created_by: req.user,
                 updated_at: new Date(),
+                company: req.user?.company,
                 updated_by: req.user
             })
             await new_remark.save()
@@ -2269,6 +2285,7 @@ export const ToogleUseless = async (req: Request, res: Response, next: NextFunct
                 created_at: new Date(),
                 created_by: req.user,
                 updated_at: new Date(),
+                company: req.user?.company,
                 updated_by: req.user
             })
             await new_remark.save()
@@ -2289,13 +2306,9 @@ export const ToogleUseless = async (req: Request, res: Response, next: NextFunct
 
 export const UpdateLeadFields = async (req: Request, res: Response, next: NextFunction) => {
     const { stages, lead_types, lead_sources } = req.body as TLeadUpdatableFieldBody
-    let fields = await LeadUpdatableField.findOne();
-
-    if (!fields) {
-        let stages = ["open", "closed", "potential"]
-        let lead_sources = ["internet", "leads gorilla", "whatsapp", "visit"]
-        let lead_types = ["wholesale", "company", "retail"]
-        fields = await new LeadUpdatableField({
+    let field = await LeadUpdatableField.findOne({ company: req.user?.company })
+    if (!field)
+        await new LeadUpdatableField({
             stages: stages,
             lead_sources: lead_sources,
             lead_types: lead_types,
@@ -2305,19 +2318,15 @@ export const UpdateLeadFields = async (req: Request, res: Response, next: NextFu
             updated_by: req.user,
             company: req.user?.company
         }).save()
-        return res.status(200).json(fields)
-    }
-
-    fields.stages = stages
-    fields.lead_types = lead_types
-    fields.lead_sources = lead_sources
-    fields.updated_at = new Date()
-    if (req.user) {
-        fields.company = req.user?.company
-        fields.updated_by = req.user
-    }
-    await fields.save()
-    return res.status(200).json(fields)
+    else
+        await LeadUpdatableField.findByIdAndUpdate(field._id, {
+            stages: stages,
+            lead_sources: lead_sources,
+            lead_types: lead_types,
+            updated_at: new Date(),
+            updated_by: req.user,
+        })
+    return res.status(200).json({ message: "saved" })
 }
 
 
@@ -2428,6 +2437,7 @@ export const ReferLead = async (req: Request, res: Response, next: NextFunction)
             lead: lead,
             created_at: new Date(),
             created_by: req.user,
+            company: req.user?.company,
             updated_at: new Date(),
             updated_by: req.user
         })
@@ -2462,7 +2472,8 @@ export const RemoveLeadReferrals = async (req: Request, res: Response, next: Nex
             created_at: new Date(),
             created_by: req.user,
             updated_at: new Date(),
-            updated_by: req.user
+            updated_by: req.user,
+            company: req.user?.company,
         })
         await new_remark.save()
         lead.last_remark = remark

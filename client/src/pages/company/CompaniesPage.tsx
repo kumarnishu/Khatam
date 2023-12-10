@@ -7,7 +7,6 @@ import { useQuery } from 'react-query'
 import { FuzzySearchCompanies, GetPaginatedCompanies } from '../../services/CompanyServices'
 import CompaniesTable from '../../components/tables/CompaniesTable'
 import { BackendError } from '../..'
-import { ChoiceContext } from '../../contexts/dialogContext'
 import ExportToExcel from '../../utils/ExportToExcel'
 import { Menu as MenuIcon } from '@mui/icons-material';
 import AlertBar from '../../components/snacks/AlertBar'

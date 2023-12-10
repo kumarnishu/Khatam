@@ -4,7 +4,6 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { ReportsMenuActions, MenuContext } from '../../contexts/menuContext';
 import { paths } from '../../Routes';
-import { UserContext } from '../../contexts/userContext';
 
 
 export const StyledLink = styled(Link)`
@@ -14,7 +13,6 @@ export const StyledLink = styled(Link)`
 
 function ReportsMenu() {
     const { menu, setMenu } = useContext(MenuContext)
-    const { user } = useContext(UserContext)
     return (
         <Menu
             anchorEl={menu?.anchorEl}
