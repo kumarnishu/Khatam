@@ -3,6 +3,10 @@ import { apiClient } from "./utils/AxiosInterceptor";
 
 export type AccessTypes = {
   user_access_fields: Access,
+  crm_access_fields: Access,
+  report_access_fields: Access,
+  backup_access_fields: Access,
+  company_access_fields: Access
 }
 // login
 export const Login = async (

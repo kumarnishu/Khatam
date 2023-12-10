@@ -47,6 +47,7 @@ const UserSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {}, IUserMet
         bucket: { type: String },
         created_at: Date
     },
+    is_crm_admin: Boolean,
     is_admin: {
         type: Boolean,
         default: false,
@@ -82,8 +83,28 @@ const UserSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {}, IUserMet
         default: true,
         required: true
     },
-    
+
     user_access_fields: {
+        is_hidden: { type: Boolean, default: false },
+        is_deletion_allowed: { type: Boolean, default: false },
+        is_editable: { type: Boolean, default: false },
+    },
+    crm_access_fields: {
+        is_hidden: { type: Boolean, default: false },
+        is_deletion_allowed: { type: Boolean, default: false },
+        is_editable: { type: Boolean, default: false },
+    },
+    company_access_fields: {
+        is_hidden: { type: Boolean, default: false },
+        is_deletion_allowed: { type: Boolean, default: false },
+        is_editable: { type: Boolean, default: false },
+    },
+    report_access_fields: {
+        is_hidden: { type: Boolean, default: false },
+        is_deletion_allowed: { type: Boolean, default: false },
+        is_editable: { type: Boolean, default: false },
+    },
+    backup_access_fields: {
         is_hidden: { type: Boolean, default: false },
         is_deletion_allowed: { type: Boolean, default: false },
         is_editable: { type: Boolean, default: false },

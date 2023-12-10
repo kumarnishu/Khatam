@@ -20,10 +20,10 @@ export default function DashBoardNavBar() {
             <Box sx={{ bgcolor: '#0039a6', width: '100%', pt: 2, pb: 2, pr: 1 }}>
                 {/* parent stack */}
                 <Stack direction="row" sx={{
-                    justifyContent: "space-between", alignItems: "center"
+                    justifyContent: "space-between",alignItems: "center"
                 }}
                 >
-                    <StyledLink to={paths.dashboard}>
+                    <StyledLink to={paths.dashboard} style={{ paddingLeft: '10px' }}>
                         <AgarsonLogo width={35} height={35} title='Go To Dashboard' />
                     </StyledLink>
                     <Stack direction="row"

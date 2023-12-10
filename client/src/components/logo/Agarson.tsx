@@ -13,7 +13,7 @@ function AgarsonLogo({ width, height, title }: Props) {
     const { user } = useContext(UserContext)
     return (
         <Stack direction="row" justifyContent={"center"}
-            alignItems="center" gap={2} pl={1}>
+            alignItems="center" gap={2} >
             <Avatar title={title}
                 sx={{ width: width, height: height, borderRadius: 2 }}
                 alt="img1" src={logo}

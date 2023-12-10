@@ -222,6 +222,26 @@ export const SignUp = async (req: Request, res: Response, next: NextFunction) =>
         is_editable: true,
         is_deletion_allowed: true
     }
+    owner.company_access_fields = {
+        is_hidden: true,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    owner.crm_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    owner.report_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    owner.backup_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
 
     owner.updated_by = owner
     owner.created_by = owner
@@ -292,6 +312,26 @@ export const NewUser = async (req: Request, res: Response, next: NextFunction) =
         is_editable: false,
         is_deletion_allowed: false
     }
+    user.company_access_fields = {
+        is_hidden: true,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    user.crm_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    user.report_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
+    user.backup_access_fields = {
+        is_hidden: false,
+        is_editable: false,
+        is_deletion_allowed: false
+    }
     await user.save()
     res.status(201).json({ message: "new user created" })
 }
@@ -342,7 +382,17 @@ export const Logout = async (req: Request, res: Response, next: NextFunction) =>
 
 export const UpdateAccessFields = async (req: Request, res: Response, next: NextFunction) => {
     const { user_access_fields,
-    } = req.body as { user_access_fields: Access }
+        crm_access_fields,
+        report_access_fields,
+        backup_access_fields,
+        company_access_fields
+    } = req.body as {
+        user_access_fields: Access,
+        crm_access_fields: Access,
+        report_access_fields: Access,
+        backup_access_fields: Access,
+        company_access_fields: Access
+    }
 
     const id = req.params.id;
     if (!isMongoId(id)) return res.status(400).json({ message: "user id not valid" })
@@ -351,7 +401,11 @@ export const UpdateAccessFields = async (req: Request, res: Response, next: Next
         return res.status(404).json({ message: "user not found" })
     }
     await User.findByIdAndUpdate(user._id, {
-        user_access_fields
+        user_access_fields,
+        crm_access_fields,
+        report_access_fields,
+        backup_access_fields,
+        company_access_fields
     })
     res.status(200).json({ message: " access updated" })
 }

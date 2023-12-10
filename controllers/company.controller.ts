@@ -40,6 +40,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                     { name: { $regex: key[0], $options: 'i' } },
                     { email: { $regex: key[0], $options: 'i' } },
                     { mobile: { $regex: key[0], $options: 'i' } },
+                    { pincode: { $regex: key[0], $options: 'i' } },
+                    { address: { $regex: key[0], $options: 'i' } },
+                    { country: { $regex: key[0], $options: 'i' } },
                 ]
 
             }
@@ -49,6 +52,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                     { name: { $regex: key[0], $options: 'i' } },
                     { email: { $regex: key[0], $options: 'i' } },
                     { mobile: { $regex: key[0], $options: 'i' } },
+                    { pincode: { $regex: key[0], $options: 'i' } },
+                    { address: { $regex: key[0], $options: 'i' } },
+                    { country: { $regex: key[0], $options: 'i' } },
                 ]
 
             }
@@ -62,6 +68,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -69,6 +78,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     }
                 ]
@@ -83,6 +95,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -90,6 +105,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     }
                 ]
@@ -106,6 +124,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -113,6 +134,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -120,6 +144,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     }
                 ]
@@ -134,6 +161,10 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
+                            
                         ]
                     },
                     {
@@ -141,6 +172,10 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
+                            
                         ]
                     },
                     {
@@ -148,6 +183,10 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
+                            
                         ]
                     }
                 ]
@@ -164,6 +203,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -171,6 +213,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -178,6 +223,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -185,6 +233,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     }
                 ]
@@ -199,6 +250,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -206,6 +260,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -213,6 +270,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     },
                     {
@@ -220,6 +280,9 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
                             { name: { $regex: key[0], $options: 'i' } },
                             { email: { $regex: key[0], $options: 'i' } },
                             { mobile: { $regex: key[0], $options: 'i' } },
+                            { pincode: { $regex: key[0], $options: 'i' } },
+                            { address: { $regex: key[0], $options: 'i' } },
+                            { country: { $regex: key[0], $options: 'i' } },
                         ]
                     }
                 ]
@@ -228,7 +291,7 @@ export const FuzzySearchCompanies = async (req: Request, res: Response, next: Ne
             }
             ).countDocuments()
         }
-       
+
         return res.status(200).json({
             companies,
             total: Math.ceil(count / limit),

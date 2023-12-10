@@ -1,4 +1,4 @@
-import { Accessibility, Assignment, Block, BlockOutlined, Edit, GroupAdd, GroupRemove, Key, RemoveCircle, Restore } from '@mui/icons-material'
+import { Accessibility, Assignment, Block, BlockOutlined, DeviceHubOutlined, Edit, GroupAdd, GroupRemove, Key, RemoveCircle, Restore } from '@mui/icons-material'
 import { Avatar, Box, Checkbox, IconButton, Tooltip, Typography } from '@mui/material'
 import { Stack } from '@mui/system'
 import { IUser } from '../../types/user.types'
@@ -231,18 +231,31 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                     </IconButton>
                                                                 </Tooltip>
                                                             }
-                                                            <Tooltip title="assign users">
-                                                                <IconButton
-                                                                    disabled={user?.created_by._id === user._id}
-                                                                    color="success"
-                                                                    size="medium"
-                                                                    onClick={() => {
-                                                                        setChoice({ type: UserChoiceActions.assign_users })
-                                                                        setUser(user)
-                                                                    }}>
-                                                                    <Assignment />
-                                                                </IconButton>
-                                                            </Tooltip>
+                                                            {/* assign user */}
+                                                            {LoggedInUser?._id === user._id ?
+                                                                <Tooltip title="assign users">
+                                                                    <IconButton
+                                                                        color="success"
+                                                                        size="medium"
+                                                                        onClick={() => {
+                                                                            setChoice({ type: UserChoiceActions.assign_users })
+                                                                            setUser(user)
+                                                                        }}>
+                                                                        <Assignment />
+                                                                    </IconButton>
+                                                                </Tooltip> :
+                                                                <Tooltip title="assign users">
+                                                                    <IconButton
+                                                                        disabled={user?.created_by._id === user._id}
+                                                                        color="success"
+                                                                        size="medium"
+                                                                        onClick={() => {
+                                                                            setChoice({ type: UserChoiceActions.assign_users })
+                                                                            setUser(user)
+                                                                        }}>
+                                                                        <Assignment />
+                                                                    </IconButton>
+                                                                </Tooltip>}
                                                             {/* admin icon */}
                                                             {LoggedInUser?.created_by._id === user._id ?
                                                                 null
@@ -250,6 +263,7 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                 <>
                                                                     {user.is_admin ?
                                                                         < Tooltip title="Remove admin"><IconButton size="medium"
+                                                                            disabled={user?.created_by._id === user._id}
                                                                             color="error"
                                                                             onClick={() => {
                                                                                 setChoice({ type: UserChoiceActions.remove_admin })
@@ -261,6 +275,7 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                         </Tooltip>
                                                                         :
                                                                         <Tooltip title="make admin"><IconButton size="medium"
+                                                                            disabled={user?.created_by._id === user._id}
                                                                             onClick={() => {
                                                                                 setChoice({ type: UserChoiceActions.make_admin })
                                                                                 setUser(user)
@@ -281,17 +296,19 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                             <Tooltip title="Block multi login"><IconButton
                                                                                 size="medium"
                                                                                 color="error"
+                                                                                disabled={user?.created_by._id === user._id}
                                                                                 onClick={() => {
                                                                                     setChoice({ type: UserChoiceActions.block_multi_login })
                                                                                     setUser(user)
 
                                                                                 }}
                                                                             >
-                                                                                <BlockOutlined />
+                                                                                <DeviceHubOutlined />
                                                                             </IconButton>
                                                                             </Tooltip> :
                                                                             <Tooltip title="Reset multi login">
                                                                                 <IconButton
+                                                                                    disabled={user?.created_by._id === user._id}
                                                                                     size="medium"
                                                                                     onClick={() => {
                                                                                         setChoice({ type: UserChoiceActions.reset_multi_login })
@@ -312,6 +329,7 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                     {user?.is_active ?
                                                                         <Tooltip title="block"><IconButton
                                                                             size="medium"
+                                                                            disabled={user?.created_by._id === user._id}
                                                                             onClick={() => {
                                                                                 setChoice({ type: UserChoiceActions.block_user })
                                                                                 setUser(user)
@@ -325,6 +343,7 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                         < Tooltip title="unblock">
                                                                             <IconButton
                                                                                 color="warning"
+                                                                                disabled={user?.created_by._id === user._id}
                                                                                 size="medium"
                                                                                 onClick={() => {
                                                                                     setChoice({ type: UserChoiceActions.unblock_user })
@@ -343,7 +362,8 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                                 :
                                                                 <Tooltip title="Change Password for this user">
                                                                     <IconButton
-                                                                        color="warning" size="medium"
+                                                                        color="warning" 
+                                                                        disabled={user?.created_by._id === user._id} size="medium"
                                                                         onClick={() => {
                                                                             setChoice({ type: UserChoiceActions.update_user_password })
                                                                             setUser(user)
@@ -357,7 +377,8 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                                             {LoggedInUser?._id === user._id ?
                                                                 <Tooltip title="Access Control">
                                                                     <IconButton
-                                                                        color="info" size="medium"
+                                                                        color="info" 
+                                                                        size="medium"
                                                                         onClick={() => {
                                                                             setChoice({ type: UserChoiceActions.control_access })
                                                                             setUser(user)
@@ -441,7 +462,7 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
 
                                         <STableCell>
                                             {user.email}
-                                            {user.email_verified && <Typography sx={{ fontSize: 12, fontWeight: 'bold' }} color="green">[verified]</Typography>}
+                                            {user.email_verified && '[verified]'}
                                         </STableCell>
 
                                         <STableCell>
@@ -455,10 +476,10 @@ function UsersSTable({ user, selectAll, users, setSelectAll, setUser, selectedUs
                                             <Typography variant="body1">{new Date(user.last_login).toLocaleString()}</Typography>
                                         </STableCell>
                                         <STableCell>
-                                            {new Date(user.created_at).toLocaleDateString()}
+                                            {new Date(user.created_at).toLocaleString()}
                                         </STableCell>
                                         <STableCell>
-                                            {new Date(user.updated_at).toLocaleDateString()}
+                                            {new Date(user.updated_at).toLocaleString()}
                                         </STableCell>
                                         <STableCell>
                                             {user.created_by.username}
