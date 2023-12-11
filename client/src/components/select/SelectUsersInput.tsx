@@ -1,7 +1,12 @@
 import { IUser } from '../../types/user.types'
 import Select from 'react-select'
 
-function SelectUsersInput({ users, setIds, user, isDisabled }: { users: IUser[], setIds: React.Dispatch<React.SetStateAction<string[]>>, isDisabled?:boolean,user: IUser }) {
+
+type Props = {
+    users: IUser[], setIds: React.Dispatch<React.SetStateAction<string[]>>, isDisabled?: boolean, user: IUser
+}
+
+function SelectUsersInput({ users, setIds, user, isDisabled }: Props) {
     const options = users.map((user) => {
         return {
             value: user._id,

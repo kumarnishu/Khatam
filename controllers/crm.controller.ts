@@ -1977,7 +1977,6 @@ export const NewRemark = async (req: Request, res: Response, next: NextFunction)
 
 export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next: NextFunction) => {
     let result: ILeadTemplate[] = []
-    let create_operation = true
     if (!req.file)
         return res.status(400).json({
             message: "please provide an Excel file",
@@ -1994,9 +1993,9 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
             workbook.Sheets[workbook_sheet[0]]
         );
         let statusText: string = ""
-
-        let new_lead_owners: IUser[] = []
-        workbook_response.forEach(async (lead) => {
+        for (let i = 0; i < workbook_response.length; i++) {
+            let lead = workbook_response[i]
+            let new_lead_owners: IUser[] = []
             let mobile: number | null = Number(lead.mobile)
             let alternate_mobile1: number | null = Number(lead.alternate_mobile1)
             let alternate_mobile2: number | null = Number(lead.alternate_mobile2)
@@ -2071,7 +2070,6 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                     status: statusText
                 })
             }
-
             if (lead.lead_owners) {
                 let names = String((lead.lead_owners)).split(",")
                 for (let i = 0; i < names.length; i++) {
@@ -2082,9 +2080,7 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
 
             }
             //update and create new nead
-            console.log(validated)
             if (lead._id && isMongoId(String(lead._id))) {
-                create_operation = false
                 let targetLead = await Lead.findById(lead._id)
                 let uniqueNumbers = []
 
@@ -2131,9 +2127,9 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                                 let new_remark = new Remark({
                                     remark: lead.remarks,
                                     lead: lead,
-                                    created_at: new Date(),
+                                    created_at: isvalidDate(lead.created_at) && new Date(lead.created_at) || new Date(),
                                     created_by: req.user,
-                                    updated_at: new Date(lead.updated_at) || new Date(),
+                                    updated_at: isvalidDate(lead.updated_at) && new Date(lead.updated_at) || new Date(),
                                     updated_by: req.user,
                                     company: req.user?.company
                                 })
@@ -2146,7 +2142,7 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                                 await Remark.findByIdAndUpdate(last_remark._id, {
                                     remark: lead.remarks,
                                     lead: lead,
-                                    updated_at: new Date(lead.updated_at) || new Date(),
+                                    updated_at: isvalidDate(lead.updated_at) && new Date(lead.updated_at) || new Date(),
                                     updated_by: req.user
                                 })
                                 targetLead.last_remark = last_remark.remark
@@ -2161,7 +2157,7 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                             alternate_mobile1: uniqueNumbers[1] || null,
                             alternate_mobile2: uniqueNumbers[2] || null,
                             lead_owners: new_lead_owners,
-                            updated_at: new Date(lead.updated_at) || new Date(),
+                            updated_at: isvalidDate(lead.updated_at) && new Date(lead.updated_at) || new Date(),
                             updated_by: req.user
                         })
                     }
@@ -2178,9 +2174,9 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                         alternate_mobile1: uniqueNumbers[1] || null,
                         alternate_mobile2: uniqueNumbers[2] || null,
                         lead_owners: new_lead_owners,
-                        created_at: new Date(lead.created_at) || new Date(),
+                        created_at: isvalidDate(lead.created_at) && new Date(lead.created_at) || new Date(),
                         created_by: req.user,
-                        updated_at: new Date(lead.updated_at) || new Date(),
+                        updated_at: isvalidDate(lead.updated_at) && new Date(lead.updated_at) || new Date(),
                         updated_by: req.user,
                         remarks: undefined
                     })
@@ -2191,7 +2187,7 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
                             created_at: new Date(lead.created_at) || new Date(),
                             created_by: req.user,
                             company: req.user?.company,
-                            updated_at: new Date(lead.updated_at) || new Date(),
+                            updated_at: isvalidDate(lead.updated_at) && new Date(lead.updated_at) || new Date(),
                             updated_by: req.user
                         })
                         await new_remark.save()
@@ -2204,8 +2200,8 @@ export const BulkLeadUpdateFromExcel = async (req: Request, res: Response, next:
 
                 }
             }
-        })
 
+        }
     }
     return res.status(200).json(result);
 

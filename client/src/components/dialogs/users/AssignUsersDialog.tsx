@@ -48,9 +48,12 @@ function AssignUsersDialog({ user }: { user: IUser }) {
     console.log(ids)
     return (
         <Dialog fullScreen open={choice === UserChoiceActions.assign_users ? true : false}
-            onClose={() => setChoice({ type: UserChoiceActions.close_user })}
+            onClose={() => {
+                setIds([])
+                setChoice({ type: UserChoiceActions.close_user })
+            }}
         >
-            <IconButton style={{ display: 'inline-block', position: 'absolute', right: '0px' }} color="error" onClick={() => setChoice({ type: UserChoiceActions.close_user })}>
+            <IconButton style={{ display: 'inline-block', position: 'absolute', right: '0px' }} color="error" onClick={() => { setIds([]); setChoice({ type: UserChoiceActions.close_user }) }}>
                 <Cancel fontSize='large' />
             </IconButton>
             <DialogTitle sx={{ minWidth: '350px' }} textAlign="center">
@@ -79,6 +82,8 @@ function AssignUsersDialog({ user }: { user: IUser }) {
                                 ids: ids
                             }
                         })
+
+                        setIds([])
                         queryClient.invalidateQueries('users')
                     }}
                         disabled={Boolean(isLoading)}
