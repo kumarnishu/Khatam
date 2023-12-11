@@ -175,7 +175,7 @@ export const GetRefers = async (req: Request, res: Response, next: NextFunction)
         leads: ILead[]
     }[] = []
     if (req.user?.is_admin) {
-        parties = await ReferredParty.find().populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
+        parties = await ReferredParty.find({ company: req.user?.company }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
         for (let i = 0; i < parties.length; i++) {
             let leads = await Lead.find({ company: req.user?.company, referred_party: parties[i] }).populate('lead_owners').populate('updated_by').populate('company').populate('created_by').populate({
                 path: 'remarks',
@@ -197,7 +197,8 @@ export const GetRefers = async (req: Request, res: Response, next: NextFunction)
         }
     }
     if (!req.user?.is_admin) {
-        parties = await ReferredParty.find({ lead_owners: { $in: [req.user?._id] } }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
+        parties = await ReferredParty.find({
+            company:req.user?.company, lead_owners: { $in: [req.user?._id] } }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
         for (let i = 0; i < parties.length; i++) {
             let leads = await Lead.find({ company: req.user?.company, referred_party: parties[i] }).populate('lead_owners').populate('updated_by').populate('company').populate('created_by').populate({
                 path: 'remarks',
@@ -224,7 +225,7 @@ export const GetPaginatedRefers = async (req: Request, res: Response, next: Next
     let limit = Number(req.query.limit)
     let page = Number(req.query.page)
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
-        let parties = await ReferredParty.find().populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
+        let parties = await ReferredParty.find({ company: req.user?.company }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
         let result: {
             party: IReferredParty,
             leads: ILead[]
@@ -1091,6 +1092,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
         if (key.length == 1 || key.length > 4) {
             let parties = await ReferredParty.find({
+                company:req.user?.company,
                 $or: [
                     { name: { $regex: key[0], $options: 'i' } },
                     { city: { $regex: key[0], $options: 'i' } },
@@ -1124,6 +1126,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 2) {
             let parties = await ReferredParty.find({
+                company:req.user?.company,
                 is_customer: false,
                 $and: [
                     {
@@ -1173,6 +1176,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 3) {
             let parties = await ReferredParty.find({
+                company:req.user?.company,
                 is_customer: false,
                 $and: [
                     {
@@ -1231,6 +1235,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 4) {
             let parties = await ReferredParty.find({
+                company:req.user?.company,
                 is_customer: false,
                 $and: [
                     {
