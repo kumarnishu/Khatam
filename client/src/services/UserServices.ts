@@ -88,7 +88,9 @@ export const MakeAdmin = async (id: string) => {
 export const RemoveAdmin = async (id: string) => {
   return await apiClient.patch(`remove-admin/user/${id}`)
 }
-
+export const GetAllUsers = async () => {
+  return await apiClient.get("users/all")
+}
 export const AssignUsers = async ({ id, body }: { id: string, body: { ids: string[] } }) => {
   return await apiClient.patch(`assign/users/${id}`, body)
 }

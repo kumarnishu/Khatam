@@ -311,82 +311,88 @@ export const GetReminderRemarks = async (req: Request, res: Response, next: Next
     return res.status(200).json(reminders)
 }
 export const GetRemarks = async (req: Request, res: Response, next: NextFunction) => {
+    let limit = Number(req.query.limit)
+    let page = Number(req.query.page)
     let id = req.query.id
     let start_date = req.query.start_date
     let end_date = req.query.end_date
-    let previous_date = new Date()
-    let day = previous_date.getDate() - 7
-    previous_date.setDate(day)
     let remarks: IRemark[] = []
-    if (start_date && end_date) {
-        let dt1 = new Date(String(start_date))
-        let dt2 = new Date(String(end_date))
+    let count = 0
+    let dt1 = new Date(String(start_date))
+    let dt2 = new Date(String(end_date))
 
-        remarks = await Remark.find({ created_at: { $gte: dt1, $lte: dt2 } }).populate('created_by').populate('updated_by').populate('company').populate({
-            path: 'lead',
-            populate: [
-                {
-                    path: 'lead_owners',
-                    model: 'User'
-                },
-                {
-                    path: 'referred_party',
-                    model: 'ReferredParty'
-                },
-                {
-                    path: 'remarks',
-                    populate: [
-                        {
-                            path: 'created_by',
-                            model: 'User'
-                        },
-                        {
-                            path: 'updated_by',
-                            model: 'User'
-                        }
-                    ]
-                }
-            ]
-        }).sort('-created_at')
-    }
-    if (!start_date && !end_date)
-        remarks = await Remark.find({ created_at: { $gte: previous_date } }).populate('created_by').populate('updated_by').populate('company').populate({
-            path: 'lead',
-            populate: [
-                {
-                    path: 'lead_owners',
-                    model: 'User'
-                },
-                {
-                    path: 'referred_party',
-                    model: 'ReferredParty'
-                },
-                {
-                    path: 'remarks',
-                    populate: [
-                        {
-                            path: 'created_by',
-                            model: 'User'
-                        },
-                        {
-                            path: 'updated_by',
-                            model: 'User'
-                        }
-                    ]
-                }
-            ]
-        }).sort('-created_at')
 
-    if (id) {
-        let user = await User.findById(id)
-        if (user) {
-            remarks = remarks.filter((remark) => {
-                return remark.created_by.username === user?.username
-            })
+    if (!Number.isNaN(limit) && !Number.isNaN(page)) {
+        if (!id) {
+            remarks = await Remark.find({ created_at: { $gte: dt1, $lt: dt2 }, created_by: req.user?._id }).populate('created_by').populate('updated_by').populate({
+                path: 'lead',
+                populate: [
+                    {
+                        path: 'lead_owners',
+                        model: 'User'
+                    },
+                    {
+                        path: 'referred_party',
+                        model: 'ReferredParty'
+                    },
+                    {
+                        path: 'remarks',
+                        populate: [
+                            {
+                                path: 'created_by',
+                                model: 'User'
+                            },
+                            {
+                                path: 'updated_by',
+                                model: 'User'
+                            }
+                        ]
+                    }
+                ]
+            }).sort('-created_at').skip((page - 1) * limit).limit(limit)
         }
+
+
+        if (id) {
+            remarks = await Remark.find({ created_at: { $gte: dt1, $lt: dt2 }, created_by: id }).populate('created_by').populate('updated_by').populate({
+                path: 'lead',
+                populate: [
+                    {
+                        path: 'lead_owners',
+                        model: 'User'
+                    },
+                    {
+                        path: 'referred_party',
+                        model: 'ReferredParty'
+                    },
+                    {
+                        path: 'remarks',
+                        populate: [
+                            {
+                                path: 'created_by',
+                                model: 'User'
+                            },
+                            {
+                                path: 'updated_by',
+                                model: 'User'
+                            }
+                        ]
+                    }
+                ]
+            }).sort('-created_at').skip((page - 1) * limit).limit(limit)
+        }
+
+        return res.status(200).json({
+            remarks,
+            total: Math.ceil(count / limit),
+            page: page,
+            limit: limit
+        })
     }
-    return res.status(200).json(remarks)
+    else
+        return res.status(400).json({ message: "bad request" })
 }
+
 export const FuzzySearchLeads = async (req: Request, res: Response, next: NextFunction) => {
     let limit = Number(req.query.limit)
     let page = Number(req.query.page)

@@ -30,8 +30,22 @@ export const GetPaginatedUsers = async (req: Request, res: Response, next: NextF
         return res.status(400).json({ message: "bad request" })
 }
 
+export const GetAllUsers = async (req: Request, res: Response, next: NextFunction) => {
+    let users: IUser[] = []
+    users = await User.find({ company: req.user?.company }).populate("created_by").populate("updated_by").populate('assigned_users')
+    res.status(200).json(users)
+}
+
 export const GetUsers = async (req: Request, res: Response, next: NextFunction) => {
-    const users = await User.find({ company: req.user?.company }).populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
+    let users: IUser[] = []
+    let user_ids: string[] = []
+    if (req.user) {
+        user_ids = req.user?.assigned_users.map((user: IUser) => { return user._id })
+    }
+    if (user_ids.length > 0)
+        users = await User.find({ company: req.user?.company, _id: { $in: user_ids } }).populate("created_by").populate("updated_by").populate('assigned_users')
+    else
+        users = await User.find({ company: req.user?.company }).populate("created_by").populate("updated_by").populate('assigned_users')
     res.status(200).json(users)
 }
 
@@ -42,6 +56,7 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
     if (!key)
         return res.status(500).json({ message: "bad request" })
     let users: IUser[] = []
+    let count = 0
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
         if (key.length == 1 || key.length > 4) {
             users = await User.find({
@@ -53,7 +68,17 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
                 ]
 
             }
-            ).populate('updated_by').populate('created_by').sort('-created_at')
+            ).populate('updated_by').populate('created_by').sort('-created_at').populate('assigned_users').skip((page - 1) * limit).limit(limit)
+            count = await User.find({
+                company: req.user?.company,
+                $or: [
+                    { username: { $regex: key[0], $options: 'i' } },
+                    { email: { $regex: key[0], $options: 'i' } },
+                    { mobile: { $regex: key[0], $options: 'i' } },
+                ]
+
+            }
+            ).countDocuments()
         }
         if (key.length == 2) {
             users = await User.find({
@@ -77,7 +102,29 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
                 ,
 
             }
-            ).populate('updated_by').populate('created_by').sort('-created_at')
+            ).populate('updated_by').populate('created_by').sort('-created_at').populate('assigned_users').skip((page - 1) * limit).limit(limit)
+            count = await User.find({
+                company: req.user?.company,
+                $and: [
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    }
+                ]
+                ,
+
+            }
+            ).countDocuments()
         }
         if (key.length == 3) {
             users = await User.find({
@@ -108,7 +155,36 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
                 ,
 
             }
-            ).populate('updated_by').populate('created_by').sort('-created_at')
+            ).populate('updated_by').populate('created_by').sort('-created_at').populate('assigned_users').skip((page - 1) * limit).limit(limit)
+            count = await User.find({
+                company: req.user?.company,
+                $and: [
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    }
+                ]
+                ,
+
+            }
+            ).countDocuments()
         }
         if (key.length == 4) {
             users = await User.find({
@@ -146,10 +222,44 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
                 ,
 
             }
-            ).populate('updated_by').populate('created_by').sort('-created_at')
+            ).populate('updated_by').populate('created_by').sort('-created_at').populate('assigned_users').skip((page - 1) * limit).limit(limit)
+            count = await User.find({
+                company: req.user?.company,
+                $and: [
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    },
+                    {
+                        $or: [
+                            { username: { $regex: key[0], $options: 'i' } },
+                            { email: { $regex: key[0], $options: 'i' } },
+                            { mobile: { $regex: key[0], $options: 'i' } },
+                        ]
+                    }
+                ]
+                ,
+
+            }
+            ).countDocuments()
         }
-        let count = users.length
-        users = users.slice((page - 1) * limit, limit * page)
         return res.status(200).json({
             users,
             total: Math.ceil(count / limit),
@@ -160,7 +270,6 @@ export const FuzzySearchUsers = async (req: Request, res: Response, next: NextFu
     else
         return res.status(400).json({ message: "bad request" })
 }
-
 export const GetProfile = async (req: Request, res: Response, next: NextFunction) => {
     let id = req.user?._id
     const user = await User.findById(id).populate('company').populate("created_by").populate("updated_by").populate('assigned_users')
