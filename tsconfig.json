@@ -13,6 +13,8 @@
     ".browsers",
     ".wwebjs_cache",
     "dist",
-    "build"
+    "build",
+    "baileys_store.json",
+    "sessions"
   ]
 }

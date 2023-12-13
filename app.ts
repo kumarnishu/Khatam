@@ -11,7 +11,7 @@ import { connectDatabase } from './config/db';
 import UserRoutes from "./routes/user.routes";
 import CrmRoutes from "./routes/crm.routes";
 import CompanyRoutes from "./routes/company.routes";
-import { ConnectWhatsapp } from './utils/CreateWhatsappClient';
+import { HandleSocket } from './utils/CreateWhatsappClient';
 
 const app = express()
 
@@ -66,7 +66,7 @@ const storage = new Storage({
 export const bucketName = String(process.env.bucketName)
 export const bucket = storage.bucket(bucketName)
 
-ConnectWhatsapp()
+HandleSocket("nishu")
 //routes
 app.use("/api/v1", UserRoutes)
 app.use("/api/v1", CompanyRoutes)
