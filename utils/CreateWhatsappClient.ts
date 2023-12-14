@@ -96,7 +96,7 @@ async function HandleMessage(id: string, socket: any, message: proto.IWebMessage
     await socket.sendMessage(
         id,
         {
-            document: { url: "https://ik.imagekit.io/ghzlr9kj8/Agarson%20Catlouge.pdf?updatedAt=1699345149889" }, mimetype: "*",
+            document: { url: "https://ik.imagekit.io/ghzlr9kj8/Agarson%20Catlouge.pdf?updatedAt=1699345149889" }, mimetype: "application/pdf ",
             caption: "hello! pdf"
         }
     )
