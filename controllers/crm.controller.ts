@@ -19,11 +19,48 @@ import { Types } from "mongoose"
 export const GetLeads = async (req: Request, res: Response, next: NextFunction) => {
     let limit = Number(req.query.limit)
     let page = Number(req.query.page)
+    const id = req.query.id
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
         let leads: ILead[] = []
         let count = 0
         if (req.user?.is_admin) {
-            leads = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] } }).populate('lead_owners').populate('updated_by').populate('company').populate('created_by').populate({
+            if (id) {
+                leads = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] }, lead_owners: id }).populate('lead_owners').populate('updated_by').populate('created_by').populate({
+                    path: 'remarks',
+                    populate: [
+                        {
+                            path: 'created_by',
+                            model: 'User'
+                        },
+                        {
+                            path: 'updated_by',
+                            model: 'User'
+                        }
+                    ]
+                }).sort('-created_at').skip((page - 1) * limit).limit(limit)
+                count = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] }, lead_owners: id }).countDocuments()
+            }
+            else {
+                leads = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] } }).populate('lead_owners').populate('updated_by').populate('created_by').populate({
+                    path: 'remarks',
+                    populate: [
+                        {
+                            path: 'created_by',
+                            model: 'User'
+                        },
+                        {
+                            path: 'updated_by',
+                            model: 'User'
+                        }
+                    ]
+                }).sort('-created_at').skip((page - 1) * limit).limit(limit)
+                count = await Lead.find({ is_customer: false, stage: { $nin: ["useless"] } }).countDocuments()
+            }
+
+        }
+
+        if (!req.user?.is_admin) {
+            leads = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] }, lead_owners: { $in: [req.user?._id] } }).populate('lead_owners').populate('updated_by').populate('created_by').populate({
                 path: 'remarks',
                 populate: [
                     {
@@ -36,23 +73,6 @@ export const GetLeads = async (req: Request, res: Response, next: NextFunction) 
                     }
                 ]
             }).sort('-created_at').skip((page - 1) * limit).limit(limit)
-            count = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] } }).countDocuments()
-        }
-
-        if (!req.user?.is_admin) {
-            leads = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] }, lead_owners: { $in: [req.user?._id] } }).populate('lead_owners').populate('updated_by').populate('company').populate('created_by').populate({
-                path: 'remarks',
-                populate: [
-                    {
-                        path: 'created_by',
-                        model: 'User'
-                    },
-                    {
-                        path: 'updated_by',
-                        model: 'User'
-                    }
-                ]
-            }).sort('-updated_at').skip((page - 1) * limit).limit(limit)
             count = await Lead.find({ company: req.user?.company, is_customer: false, stage: { $nin: ["useless"] }, lead_owners: { $in: [req.user?._id] } }).countDocuments()
         }
 
@@ -66,6 +86,7 @@ export const GetLeads = async (req: Request, res: Response, next: NextFunction) 
     else
         return res.status(400).json({ message: "bad request" })
 }
+
 
 export const GetUselessLeads = async (req: Request, res: Response, next: NextFunction) => {
     let limit = Number(req.query.limit)
@@ -198,7 +219,8 @@ export const GetRefers = async (req: Request, res: Response, next: NextFunction)
     }
     if (!req.user?.is_admin) {
         parties = await ReferredParty.find({
-            company:req.user?.company, lead_owners: { $in: [req.user?._id] } }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
+            company: req.user?.company, lead_owners: { $in: [req.user?._id] }
+        }).populate('created_by').populate('updated_by').populate('company').populate('lead_owners').sort('-updated_at')
         for (let i = 0; i < parties.length; i++) {
             let leads = await Lead.find({ company: req.user?.company, referred_party: parties[i] }).populate('lead_owners').populate('updated_by').populate('company').populate('created_by').populate({
                 path: 'remarks',
@@ -350,6 +372,7 @@ export const GetRemarks = async (req: Request, res: Response, next: NextFunction
                     }
                 ]
             }).sort('-created_at').skip((page - 1) * limit).limit(limit)
+            count = await Remark.find({ created_at: { $gte: dt1, $lt: dt2 }, created_by: req.user?._id }).countDocuments()
         }
 
 
@@ -380,6 +403,7 @@ export const GetRemarks = async (req: Request, res: Response, next: NextFunction
                     }
                 ]
             }).sort('-created_at').skip((page - 1) * limit).limit(limit)
+            count = await Remark.find({ created_at: { $gte: dt1, $lt: dt2 }, created_by: id }).countDocuments()
         }
 
         return res.status(200).json({
@@ -1098,7 +1122,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
     if (!Number.isNaN(limit) && !Number.isNaN(page)) {
         if (key.length == 1 || key.length > 4) {
             let parties = await ReferredParty.find({
-                company:req.user?.company,
+                company: req.user?.company,
                 $or: [
                     { name: { $regex: key[0], $options: 'i' } },
                     { city: { $regex: key[0], $options: 'i' } },
@@ -1132,7 +1156,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 2) {
             let parties = await ReferredParty.find({
-                company:req.user?.company,
+                company: req.user?.company,
                 is_customer: false,
                 $and: [
                     {
@@ -1182,7 +1206,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 3) {
             let parties = await ReferredParty.find({
-                company:req.user?.company,
+                company: req.user?.company,
                 is_customer: false,
                 $and: [
                     {
@@ -1241,7 +1265,7 @@ export const FuzzySearchRefers = async (req: Request, res: Response, next: NextF
         }
         if (key.length == 4) {
             let parties = await ReferredParty.find({
-                company:req.user?.company,
+                company: req.user?.company,
                 is_customer: false,
                 $and: [
                     {

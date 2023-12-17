@@ -1,4 +1,5 @@
 import express, { NextFunction, Request, Response } from 'express';
+import { createServer } from "http"
 import compression from "compression"
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
@@ -11,9 +12,13 @@ import { connectDatabase } from './config/db';
 import UserRoutes from "./routes/user.routes";
 import CrmRoutes from "./routes/crm.routes";
 import CompanyRoutes from "./routes/company.routes";
-import { HandleSocket } from './utils/CreateWhatsappClient';
+import BotRoutes from "./routes/bot.routes";
+import { getCurrentUser, userJoin, userLeave } from './utils/CreateWhatsappClient';
+import { Server } from 'socket.io';
+
 
 const app = express()
+const server = createServer(app)
 
 
 dotenv.config();
@@ -51,6 +56,30 @@ if (ENV === "production") {
     }
 }
 
+let io: Server | undefined = undefined
+io = new Server(server, {
+    cors: {
+        origin: origin,
+        credentials: true
+    }
+});
+io.on("connection", (socket:any) => {
+    console.log("socket connected")
+    socket.on('JoinRoom', async (id: string, path: string) => {
+        console.log("running in room", id, path)
+        const user = userJoin(id)
+        socket.join(user.id)
+        if (io)
+            // createWhatsappClient(id, path, io)
+            socket.on("disconnect", (reason: string) => {
+                let user = getCurrentUser(id)
+                if (user)
+                    userLeave(user.id)
+                console.log(`socket ${socket.id} disconnected due to ${reason}`);
+            });
+    })
+
+});
 
 const storage = new Storage({
     projectId: process.env.projectId,
@@ -66,11 +95,12 @@ const storage = new Storage({
 export const bucketName = String(process.env.bucketName)
 export const bucket = storage.bucket(bucketName)
 
-HandleSocket("nishu")
+
 //routes
 app.use("/api/v1", UserRoutes)
 app.use("/api/v1", CompanyRoutes)
 app.use("/api/v1", CrmRoutes)
+app.use("/api/v1", BotRoutes)
 
 
 //react app handler
@@ -99,6 +129,10 @@ if (!PORT) {
     console.log("Server Port not specified in the environment")
     process.exit(1)
 }
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`running on ${HOST}:${PORT}`)
 });
+
+export {
+    io
+}

@@ -1,9 +1,11 @@
 import { apiClient } from "./utils/AxiosInterceptor"
 
 
-export const GetLeads = async ({ limit, page }: { limit: number | undefined, page: number | undefined }) => {
-    return await apiClient.get(`leads/?limit=${limit}&page=${page}`)
-
+export const GetLeads = async ({ limit, page, userId }: { limit: number | undefined, userId?: string, page: number | undefined }) => {
+    if (userId)
+        return await apiClient.get(`leads/?limit=${limit}&page=${page}&id=${userId}`)
+    else
+        return await apiClient.get(`leads/?limit=${limit}&page=${page}`)
 }
 
 export const GetReminderRemarks = async () => {
