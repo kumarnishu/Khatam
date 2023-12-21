@@ -8,6 +8,9 @@ import DashBoardNavBar from './components/navbar/DashboardNavbar'
 import DashBoardPage from './pages/DashBoardPage'
 import { LinearProgress } from '@mui/material'
 import CrmNavBar from './components/navbar/CrmNavBar'
+import BotNavBar from './components/navbar/BotNavBar'
+import FlowsPage from './pages/bot/FlowsPage'
+import BotHelpPage from './pages/bot/BotHelpPage'
 
 
 const ResetPasswordDialog = React.lazy(() => import('./components/dialogs/users/ResetPasswordDialog'))
@@ -53,6 +56,11 @@ export enum paths {
   // backup
   backup = "backups",
   backup_help_page = "backup_help_page",
+
+  //bot
+  bot = "bot",
+  flows = "flows",
+  bot_help_page = "bot_help_page",
 
   // users
   users = "users",
@@ -217,7 +225,7 @@ function AppRoutes() {
                   </Suspense>
                 }
               />
-              
+
               <Route
                 path={paths.report_help_page} element={
                   <Suspense fallback={<LinearProgress />}>
@@ -226,6 +234,26 @@ function AppRoutes() {
                 }
               />
             </Route>}
+          {user.is_admin &&
+            < Route path={paths.bot} element={<BotNavBar />}>
+              <Route index
+                element={
+                  <FlowsPage />
+                }
+              />
+              <Route
+                path={paths.flows} element={
+                  <FlowsPage />
+                }
+              />
+              <Route
+                path={paths.bot_help_page} element={
+                  <BotHelpPage />
+                }
+              />
+
+            </Route>}
+          {/* cr
           {/* backup page */}
           {!user.backup_access_fields.is_hidden &&
             < Route path={paths.backup} element={<UsersNavBar />}>

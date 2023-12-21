@@ -5,12 +5,17 @@ type UserChoices = "signup" | "reset_password_mail" | "close_user" | "new_user" 
 type CrmChoices = "create_lead" | "update_lead" | "add_remark" | "view_remarks" | "close_lead" | "display_filter" | "delete_lead" | "convert_customer" | "lead_advance_filter" | "create_refer" | "update_refer" | "delete_refer" | "view_referrals" | "bulk_delete_useless_leads" | "convert_useless"
   | "refer_lead" | "remove_referral" | "assign_refer" | "bulk_assign_leads" | "bulk_assign_refers" | "delete_remark" | "update_remark"
 
+type BotChoices = "refresh_whatsapp" | "close_bot"
 
 
-type ChoiceState = UserChoices|CrmChoices
+type ChoiceState = UserChoices | CrmChoices | BotChoices
 
 const initialState: ChoiceState | null = null
 
+export enum BotChoiceActions {
+  close_bot = "close_bot",
+  refresh_whatsapp = "refresh_whatsapp"
+}
 
 export enum UserChoiceActions {
   signup = "signup",
@@ -61,7 +66,7 @@ export enum CrmChoiceActions {
   bulk_assign_refers = "bulk_assign_refers"
 }
 type Action = {
-  type: UserChoiceActions | CrmChoiceActions
+  type: UserChoiceActions | CrmChoiceActions | BotChoiceActions
 }
 
 // reducer
@@ -112,6 +117,9 @@ function reducer(state: ChoiceState | null, action: Action) {
     case CrmChoiceActions.convert_useless: return type
     case CrmChoiceActions.bulk_assign_leads: return type
     case CrmChoiceActions.bulk_assign_refers: return type
+
+    case BotChoiceActions.refresh_whatsapp: return type
+    case BotChoiceActions.close_bot: return type
 
     default: return state
   }

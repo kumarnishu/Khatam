@@ -3,7 +3,7 @@ import { paths } from "../Routes"
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../contexts/userContext";
-import { ApartmentOutlined, Book, Group, Person3Outlined } from "@mui/icons-material";
+import { ApartmentOutlined, Book, Group, Person3Outlined, WhatsApp } from "@mui/icons-material";
 import BackupIcon from '@mui/icons-material/Backup';
 
 function DashBoardPage() {
@@ -64,6 +64,20 @@ function DashBoardPage() {
                                     <Book sx={{ height: 50, width: 50 }} />
                                     <Typography variant="button" sx={{ fontSize: 16 }} component="div">
                                         Reports
+                                    </Typography>
+                                </CardContent>
+
+                            </Card>
+                        </Link>
+                    </Grid>}
+                    {/* whatsapp bot */}
+                    {user?.is_admin && <Grid item xs={12} md={3} lg={3} sx={{ p: 1 }}>
+                        <Link to={paths.bot} style={{ textDecoration: 'none' }}>
+                            <Card sx={{ bgcolor: 'white', boxShadow: 2, border: 10, borderRadius: 1, borderColor: 'white' }}>
+                                <CardContent sx={{ display: 'flex', direction: "row", alignItems: "center", gap: 2 }}>
+                                    <WhatsApp sx={{ height: 50, width: 50 }} />
+                                    <Typography variant="button" sx={{ fontSize: 16 }} component="div">
+                                        WA Bot
                                     </Typography>
                                 </CardContent>
 

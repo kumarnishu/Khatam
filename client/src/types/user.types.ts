@@ -21,7 +21,7 @@ export type IUser = {
     assigned_users: IUser[]
     client_id: string,
     client_data_path: string,
-    connected_number: string,
+    connected_number?: string,
     user_access_fields: Access,
     company_access_fields: Access,
     crm_access_fields: Access,

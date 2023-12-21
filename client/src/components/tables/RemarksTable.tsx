@@ -337,8 +337,8 @@ function RemarksTable({ remark, remarks, setRemark }: Props) {
 
 
 
-                                        <STableCell title={remark.lead.last_remark && remark.lead.last_remark}>
-                                            {remark.lead.last_remark && remark.lead.last_remark.slice(0, 50)}
+                                        <STableCell title={remark.remark}>
+                                            {remark.remark.slice(0, 50)}
 
                                         </STableCell>
 

@@ -72,57 +72,57 @@ async function HandleMessage(id: string, socket: any, message: proto.IWebMessage
     // send a reply messagge
     await socket.sendMessage(id, { text: 'oh hello there' }, { quoted: message })
     // send a mentions message
-    await socket.sendMessage(id, { text: '@12345678901', mentions: ['12345678901@s.whatsapp.net'] })
-    // send a location!
-    await socket.sendMessage(
-        id,
-        { location: { degreesLatitude: 24.121231, degreesLongitude: 55.1121221 } }
-    )
+    // await socket.sendMessage(id, { text: '@12345678901', mentions: ['12345678901@s.whatsapp.net'] })
+    // // send a location!
+    // await socket.sendMessage(
+    //     id,
+    //     { location: { degreesLatitude: 24.121231, degreesLongitude: 55.1121221 } }
+    // )
     // send a contact!
-    const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
-        + 'VERSION:3.0\n'
-        + 'FN:Jeff Singh\n' // full name
-        + 'ORG:Ashoka Uni;\n' // the organization of the contact
-        + 'TEL;type=CELL;type=VOICE;waid=911234567890:+91 12345 67890\n' // WhatsApp ID + phone number
-        + 'END:VCARD'
-    await socket.sendMessage(
-        id,
-        {
-            contacts: {
-                displayName: 'Jeff',
-                contacts: [{ vcard }]
-            }
-        }
-    )
+    // const vcard = 'BEGIN:VCARD\n' // metadata of the contact card
+    //     + 'VERSION:3.0\n'
+    //     + 'FN:Jeff Singh\n' // full name
+    //     + 'ORG:Ashoka Uni;\n' // the organization of the contact
+    //     + 'TEL;type=CELL;type=VOICE;waid=911234567890:+91 12345 67890\n' // WhatsApp ID + phone number
+    //     + 'END:VCARD'
+    // await socket.sendMessage(
+    //     id,
+    //     {
+    //         contacts: {
+    //             displayName: 'Jeff',
+    //             contacts: [{ vcard }]
+    //         }
+    //     }
+    // )
 
 
-    const reactionMessage = {
-        react: {
-            text: "💖", // use an empty string to remove the reaction
-            key: message.key
-        }
-    }
+    // const reactionMessage = {
+    //     react: {
+    //         text: "💖", // use an empty string to remove the reaction
+    //         key: message.key
+    //     }
+    // }
     // send a link
-    await socket.sendMessage(id, { text: 'Hi, this was sent using https://github.com/adiwajshing/baileys' })
-    await socket.sendMessage(
-        id,
-        {
-            video: { url: "https://www.w3schools.com/tags/movie.mp4" }, mimetype: 'video/mp4',
-            caption: "hello!"
-        }
-    )
-    await socket.sendMessage(
-        id,
-        {
-            document: { url: "https://ik.imagekit.io/ghzlr9kj8/Agarson%20Catlouge.pdf?updatedAt=1699345149889" }, mimetype: "application/pdf ",
-            caption: "hello! pdf"
-        }
-    )
+    // await socket.sendMessage(id, { text: 'Hi, this was sent using https://github.com/adiwajshing/baileys' })
+    // await socket.sendMessage(
+    //     id,
+    //     {
+    //         video: { url: "https://www.w3schools.com/tags/movie.mp4" }, mimetype: 'video/mp4',
+    //         caption: "hello!"
+    //     }
+    // )
+    // await socket.sendMessage(
+    //     id,
+    //     {
+    //         document: { url: "https://ik.imagekit.io/ghzlr9kj8/Agarson%20Catlouge.pdf?updatedAt=1699345149889" }, mimetype: "application/pdf ",
+    //         caption: "hello! pdf"
+    //     }
+    // )
 
-    // send an audio file
-    await socket.sendMessage(
-        id,
-        { audio: { url: "https://www.w3schools.com/html/horse.ogg" }, mimetype: 'audio/mp4' },
-    )
-    await socket.sendMessage(id, reactionMessage)
+    // // send an audio file
+    // await socket.sendMessage(
+    //     id,
+    //     { audio: { url: "https://www.w3schools.com/html/horse.ogg" }, mimetype: 'audio/mp4' },
+    // )
+    // await socket.sendMessage(id, reactionMessage)
 }
