@@ -51,9 +51,10 @@ export async function CreateWhatsappClient(client_id: string) {
                     connected_number: null
                 })
             }
+            if (clients.find((id) => id === client_id))
+                CreateWhatsappClient(client_id)
             clients = clients.filter((client) => { return client.client_id === client_id })
             fs.rmSync(`sessions/${client_id}`, { recursive: true, force: true })
-            CreateWhatsappClient(client_id)
         }
         if (conn.connection === "connecting") {
             if (io)
