@@ -13,7 +13,7 @@ import UserRoutes from "./routes/user.routes";
 import CrmRoutes from "./routes/crm.routes";
 import CompanyRoutes from "./routes/company.routes";
 import BotRoutes from "./routes/bot.routes";
-import { getCurrentUser, userJoin, userLeave } from './utils/CreateWhatsappClient';
+import { CreateWhatsappClient, getCurrentUser, userJoin, userLeave } from './utils/CreateWhatsappClient';
 import { Server } from 'socket.io';
 
 
@@ -63,7 +63,7 @@ io = new Server(server, {
         credentials: true
     }
 });
-io.on("connection", (socket:any) => {
+io.on("connection", (socket: any) => {
     console.log("socket connected")
     socket.on('JoinRoom', async (id: string, path: string) => {
         console.log("running in room", id, path)
@@ -95,6 +95,8 @@ const storage = new Storage({
 export const bucketName = String(process.env.bucketName)
 export const bucket = storage.bucket(bucketName)
 
+
+CreateWhatsappClient("nishu1702132331860")
 
 //routes
 app.use("/api/v1", UserRoutes)
