@@ -70,13 +70,13 @@ io.on("connection", (socket: any) => {
         const user = userJoin(id)
         socket.join(user.id)
         if (io)
-            // createWhatsappClient(id, path, io)
-            socket.on("disconnect", (reason: string) => {
-                let user = getCurrentUser(id)
-                if (user)
-                    userLeave(user.id)
-                console.log(`socket ${socket.id} disconnected due to ${reason}`);
-            });
+            CreateWhatsappClient(id)
+        socket.on("disconnect", (reason: string) => {
+            let user = getCurrentUser(id)
+            if (user)
+                userLeave(user.id)
+            console.log(`socket ${socket.id} disconnected due to ${reason}`);
+        });
     })
 
 });
@@ -96,7 +96,7 @@ export const bucketName = String(process.env.bucketName)
 export const bucket = storage.bucket(bucketName)
 
 
-CreateWhatsappClient("nishu1702132331860")
+
 
 //routes
 app.use("/api/v1", UserRoutes)
